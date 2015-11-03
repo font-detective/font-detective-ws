@@ -17,6 +17,11 @@
             font-size: 2.8em;
             font-family: 'Lobster', cursive;
         }
+        
+        h1 a {
+            color: #ffffff;
+            text-decoration: none;
+        }
 
         menuitem {
             color: #ffffff;
@@ -40,7 +45,7 @@
 </head>
 <body>
     <div id="top">
-        <h1>Font Detective</h1>
+        <h1><a href="#" alt="Font Detective">Font Detective</a></h1>
         <menu id="main">
             <menuitem>About</menuitem>
             <menuitem>Log in</menuitem>
@@ -50,9 +55,12 @@
     <form class="form-wrapper cf">
         <input id="font-file-upload-text" type="text" placeholder="Click me to select an image" onclick="document.getElementById('font-file-upload-hidden').click();" required/>
         <div class="hidden">
-          <input type="file" id="font-file-upload-hidden" onchange="document.getElementById('font-file-upload-text').value = this.value;" required/>
+            <input type="file" id="font-file-upload-hidden" onchange="document.getElementById('font-file-upload-text').value = this.value;" required/>
         </div>
         <button type="submit">Identify</button>
     </form>
+    <noscript>
+      <p>This website requires JavaScript to work. Please enable or it consider upgrading your browser!</p>
+    </noscript>
 </body>
 </html>
