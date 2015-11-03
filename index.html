@@ -1,0 +1,58 @@
+<html>
+<head>
+    <title>Font Detective</title>
+    
+    <!-- Beautiful: https://dribbble.com/shots/2330293-Bulb-Energy/attachments/443757 -->
+    
+    <!-- CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Lobster|Ubuntu+Condensed|Asap|Crimson+Text' rel='stylesheet' type='text/css'>
+    <link href='css/form.css' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+            background-color: #383B3C;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.8em;
+            font-family: 'Lobster', cursive;
+        }
+
+        menuitem {
+            color: #ffffff;
+            font-size: 1.2em;
+            font-family: 'Asap', sans-serif;
+        }
+        
+        menuitem:hover {
+            color: #d83c3c;
+        }
+
+        p {
+            color: #ffffff;
+            font-family: 'Asap', sans-serif;
+        }
+        
+        .hidden {
+          display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="top">
+        <h1>Font Detective</h1>
+        <menu id="main">
+            <menuitem>About</menuitem>
+            <menuitem>Log in</menuitem>
+        </menu>
+    </div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <form class="form-wrapper cf">
+        <input id="font-file-upload-text" type="text" placeholder="Click me to select an image" onclick="document.getElementById('font-file-upload-hidden').click();" required/>
+        <div class="hidden">
+          <input type="file" id="font-file-upload-hidden" onchange="document.getElementById('font-file-upload-text').value = this.value;" required/>
+        </div>
+        <button type="submit">Identify</button>
+    </form>
+</body>
+</html>
