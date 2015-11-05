@@ -1,15 +1,19 @@
 {
-    "name": "fontdetector",
-    "description": "Identify fonts in the cloud!",
+  "name": "font-detective",
+  "description": "Identify fonts in the cloud!",
     "version": "0.0.1",
     "repository": { 
         "type":"git",
         "url": "https://github.com/lukem512/font-detective.git"
     },
     "scripts": {
-        "start": "node start.js"
+        "start": "node app.js"
     },
-    "dependencies": {
-        "express": "4.13.3"
-    }
+  "dependencies": {
+    "body-parser": "^1.0.2",
+    "express": "~4.1.1",
+    "jade": "~0.31.2",
+    "method-override": "^1.0.0",
+    "morgan": "^1.0.0"
+  }
 }
