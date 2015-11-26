@@ -5,3 +5,5 @@
 |_|  \___/|_| |_|\__|     \__,_|\___|\__\___|\___|\__\___/|_|   
                                                                 
 + - - - Identify fonts in the cloud! - - - - - - - - - - - - - +
+
+Left and Right icons by Heberti Almeida from the Noun Project

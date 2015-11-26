@@ -1,77 +1,17 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>Font Detective</title>
-	<style>
-		body {
-			background: #526537;
-			font-family: arial;
-		}
-
-		footer {
-		    position: absolute;
-		    bottom: 0;
-		    left: 0;
-		    right: 0;
-		    top: 50%;
-		    background: #ddd;
-		}
-
-		.pane {
-		    position: absolute;
-		    top: 50%;
-		    left: 50%;
-		    background: #fff;
-		    margin: -300px -300px;
-		    padding: 22px 32px;
-		    -moz-border-radius: 8px;
-		    -webkit-border-radius: 8px;
-		    border-radius: 8px;
-		    -moz-box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
-		    -webkit-box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
-		    -box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
-		}
-
-		.pane h1 {
-			font-size: 2em;
-			color: #72809a;
-		}
-
-		.pane h2 {
-			font-size: 1em;
-			color: #b9c1cf;
-		}
-
-		.misc {
-		    position: absolute;
-		    top: 103%;
-		    left: 0;
-		    width: 100%;
-		}
-
-		.misc a {
-			color: #526537;
-			text-decoration: none;
-		}
-
-		.misc a:hover {
-			color: #526537;
-			text-decoration: underline;
-		}
-
-		.text-center {
-			text-align: center;
-		}
-	</style>
+	<title>Font Detective > Do you want to identify a font?</title>
+	<link rel="stylesheet" href="./css/style.css" />
 
 	<!-- DropZone drag 'n' drop file upload -->
-	<script src="./js/dropzone.js"></script>
-	<link rel="stylesheet" href="./css/dropzone.css" />
+	<script src="./vendor/dropzone/js/dropzone.js"></script>
+	<link   href="./vendor/dropzone/css/dropzone.css" rel="stylesheet" />
 	<!-- !DropZone -->
 </head>
 <body>
 	<footer></footer>
-	<div class="pane">
+	<div class="pane" data-role="page" id="page1">
 		<h1>Do you want to identify a font?</h1>
 		<h2>Upload an image showing us what you'd like to find.</h2>
 		<br />
