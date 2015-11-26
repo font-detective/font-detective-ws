@@ -4,7 +4,7 @@
  */
 
 var express = require('express'),
-  bodyParser = require('body-parser'),
+  busboy = require('connect-busboy'),
   methodOverride = require('method-override'),
   morgan = require('morgan'),
   routes = require('./routes'),
@@ -24,9 +24,12 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(morgan('dev'));
-app.use(bodyParser());
+app.use(busboy());
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// serve static html for v2
+app.use(express.static(path.join(__dirname, 'mock')));
 
 var env = process.env.NODE_ENV || 'development';
 
@@ -50,7 +53,7 @@ app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
 
 // JSON API
-app.get('/api/name', api.name);
+app.post('/api/upload', api.upload);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

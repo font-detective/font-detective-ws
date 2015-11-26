@@ -75,13 +75,14 @@
 		<h1>Do you want to identify a font?</h1>
 		<h2>Upload an image showing us what you'd like to find.</h2>
 		<br />
-		<form action="/upload-target" id="fileUpload" class="dropzone"></form>
+		<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone"></form>
 		<div class="misc text-center">
 			Or you can <a href="/browse">browse</a> previous matches.
 		</div>
 	</div>
 	<script>
 		Dropzone.options.fileUpload = {
+		  paramName: "file",
 		  maxFiles: 1, // Upload one file only
 		  init: function() {
 		    this.on("addedfile", function() {
