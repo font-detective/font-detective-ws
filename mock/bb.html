@@ -1,0 +1,35 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Font Detective > Select the text</title>
+	<link rel="stylesheet" href="./css/style.css" />
+
+	<!-- imgareaselect canvas image selection -->
+	<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
+	<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
+	<link  href="./vendor/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" rel="stylesheet" />
+	<!-- !imgareaselect -->
+</head>
+<body>
+	<footer></footer>
+	<div class="pane">
+		<h1>Select the text</h1>
+		<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
+		<br />
+		<img id="sample" src="http://odyniec.net/projects/imgareaselect/flower2.jpg" />
+		<div class="misc text-center">
+			Go <a href="#">back</a> to upload a new image.
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+		    $('img#sample').imgAreaSelect({
+		    	x1: 120, y1: 90, x2: 280, y2: 210,
+		        handles: true,
+		        onSelectEnd: function() {
+		        }
+		    });
+		});
+	</script>
+</body>
+</html>
