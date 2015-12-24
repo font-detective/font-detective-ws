@@ -4,6 +4,10 @@
 	<title>Font Detective > Do you want to identify a font?</title>
 	<link rel="stylesheet" href="./css/style.css" />
 
+	<!-- jQuery for SVG in-lining -->
+	<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
+	<!-- !jQuery -->
+
 	<!-- DropZone drag 'n' drop file upload -->
 	<script src="./vendor/dropzone/js/dropzone.js"></script>
 	<link   href="./vendor/dropzone/css/dropzone.css" rel="stylesheet" />
@@ -11,12 +15,20 @@
 </head>
 <body>
 	<footer></footer>
-	<div class="container">
-		<div class="pane item item-fixed" data-role="page" id="page1">
-			<h1>Do you want to identify a font?</h1>
-			<h2>Upload an image showing us what you'd like to find.</h2>
-			<br />
-			<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone"></form>
+	<div class="column">
+		<div class="row">
+			<div class="item icon left" title="">
+				<!--<a href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>-->
+			</div>
+			<div class="pane item-fixed" id="page1">
+				<h1>Do you want to identify a font?</h1>
+				<h2>Upload an image showing us what you'd like to find.</h2>
+				<br />
+				<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone"></form>
+			</div>
+			<div class="item icon right" title="Continue?">
+				<a href="bb.html"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+			</div>
 		</div>
 		<div class="misc text-center">
 			Or you can <a href="/browse">browse</a> previous matches.
@@ -39,6 +51,35 @@
 		  dictDefaultMessage: "Drag and drop your image here.",
 		  dictMaxFilesExceeded: "We can only deal with one at a time!"
 		};
+
+		// Replace embedded images with inline-SVG
+		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
+		jQuery('img.svg').each(function(){
+            var $img = jQuery(this);
+            var imgID = $img.attr('id');
+            var imgClass = $img.attr('class');
+            var imgURL = $img.attr('src');
+
+            jQuery.get(imgURL, function(data) {
+                // Get the SVG tag, ignore the rest
+                var $svg = jQuery(data).find('svg');
+
+                // Add replaced image's ID to the new SVG
+                if(typeof imgID !== 'undefined') {
+                    $svg = $svg.attr('id', imgID);
+                }
+                // Add replaced image's classes to the new SVG
+                if(typeof imgClass !== 'undefined') {
+                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+                }
+
+                // Remove any invalid XML tags as per http://validator.w3.org
+                $svg = $svg.removeAttr('xmlns:a');
+
+                // Replace image with new SVG
+                $img.replaceWith($svg);
+            }, 'xml');
+        });
 	</script>
 </body>
 </html>

@@ -13,15 +13,23 @@
 </head>
 <body>
 	<footer></footer>
-	<div class="container">
-		<div class="pane">
-			<h1>Select the text</h1>
-			<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
-			<br />
-			<img id="sample" src="./img/roros-full.jpg" />
+	<div class="column">
+		<div class="row">
+			<div class="item icon left" title="Go back?">
+				<a href="upload.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+			</div>
+			<div class="pane item-fixed">
+				<h1>Select the text</h1>
+				<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
+				<br />
+				<img id="sample" src="./img/cup.jpg" />
+			</div>
+			<div class="item icon right" title="Continue?">
+				<a href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+			</div>
 		</div>
 		<div class="misc text-center">
-			Go <a href="#">back</a> to upload a new image.
+			Go <a href="upload.html">back</a> to upload a new image.
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -33,6 +41,35 @@
 		        }
 		    });
 		});
+
+		// Replace embedded images with inline-SVG
+		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
+		jQuery('img.svg').each(function(){
+            var $img = jQuery(this);
+            var imgID = $img.attr('id');
+            var imgClass = $img.attr('class');
+            var imgURL = $img.attr('src');
+
+            jQuery.get(imgURL, function(data) {
+                // Get the SVG tag, ignore the rest
+                var $svg = jQuery(data).find('svg');
+
+                // Add replaced image's ID to the new SVG
+                if(typeof imgID !== 'undefined') {
+                    $svg = $svg.attr('id', imgID);
+                }
+                // Add replaced image's classes to the new SVG
+                if(typeof imgClass !== 'undefined') {
+                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+                }
+
+                // Remove any invalid XML tags as per http://validator.w3.org
+                $svg = $svg.removeAttr('xmlns:a');
+
+                // Replace image with new SVG
+                $img.replaceWith($svg);
+            }, 'xml');
+        });
 	</script>
 </body>
 </html>
