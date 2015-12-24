@@ -33,8 +33,11 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+		var ias = {};
+
 		$(document).ready(function () {
-		    $('img#sample').imgAreaSelect({
+		    ias = $('img#sample').imgAreaSelect({
+		    	instance: true,
 		    	x1: 120, y1: 90, x2: 280, y2: 210,
 		        handles: true,
 		        onSelectEnd: function() {
@@ -87,6 +90,8 @@
 
 		$("#right-button").attr("href", "#");
 		$("#right-button").on('click', function(){
+			// TODO: send the bounding box to S3
+			alert(JSON.stringify(ias.getSelection()));
 			// fadeout("process.html")
 		});
 
