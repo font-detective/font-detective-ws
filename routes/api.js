@@ -10,6 +10,7 @@ AWS.config.region = "eu-west-1";
 
 var s3 = new AWS.S3();
 var defaultBucket = "fontdetective";
+var defaultFolder = "img";
 
 // Puts a file in specified (bucket, key)
 function putFileS3(filename, folder, key, bucket, callback) {
@@ -50,19 +51,21 @@ function getLink(folder, key, bucket) {
   return "https://s3-eu-west-1.amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
 }
 
+// Uploads a file, first to the server, then to S3.
+// Delete the local copy when complete
 exports.upload = function (req, res) {
 	var fstream;
     req.pipe(req.busboy);
     req.busboy.on('file', function (fieldname, file, filename) {
         console.log("Uploading: " + filename);
         var path = __dirname + '/../files/' + filename;
-        var folder = "img";
         fstream = fs.createWriteStream(path);
         file.pipe(fstream);
         fstream.on('close', function () {
-            putFileS3(path, folder, filename, defaultBucket, function(){
-                console.log(getLink(folder, filename, defaultBucket));
+            putFileS3(path, defaultFolder, filename, defaultBucket, function(){
+                console.log(getLink(defaultFolder, filename, defaultBucket));
                 res.redirect('back');
+                fs.unlink(path);
             });
         });
     });
