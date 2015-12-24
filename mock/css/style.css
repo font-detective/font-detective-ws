@@ -1,6 +1,9 @@
 body {
 	background: #526537;
 	font-family: arial;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 footer {
@@ -111,12 +114,22 @@ footer {
     margin: 1em;
     padding: 0.5em;
     max-width: 20%; /* Only set width to constrain aspect */
-    border-radius: 50%;
     background-color: white;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    -moz-box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+    -webkit-box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+    -box-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+    z-index: 1;
+}
+
+svg path {
+    fill: #526537;
 }
 
 svg:hover path {
-    fill: red;
+    fill: #72809a;
 }
 
 .left {
