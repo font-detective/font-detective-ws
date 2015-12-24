@@ -19,10 +19,11 @@ function putFileS3(filename, folder, key, bucket, callback) {
 }
 
 // Puts data in specified (bucket, key)
+// For now, this is public readable.
 function putS3(body, folder, key, bucket, callback) {
   var metadata = { uploaded: Date.now().toString() };
   var fqkey = (folder != "") ? folder + "/" + key : key;
-  var s3obj = new AWS.S3({params: {Bucket: bucket, Key: fqkey, Metadata: metadata}});
+  var s3obj = new AWS.S3({params: {Bucket: bucket, Key: fqkey, Metadata: metadata, ACL:'public-read'}});
   s3obj.upload({Body: body}).
     on("httpUploadProgress", function(evt){
         console.log((evt.loaded / evt.total).toFixed(2) + "%");
