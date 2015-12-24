@@ -129,7 +129,7 @@ svg path {
 }
 
 svg:hover path {
-    fill: #72809a;
+    fill: black;
 }
 
 .left {
@@ -140,4 +140,11 @@ svg:hover path {
 .right {
     float: left;
     text-align: left;
+}
+
+#content,
+#extra,
+#left-arrow-container,
+#right-arrow-container {
+    opacity: 0;
 }

@@ -17,20 +17,22 @@
 	<footer></footer>
 	<div class="column">
 		<div class="row">
-			<div class="item icon left" title="">
-				<!--<a href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>-->
+			<div id="left-arrow-container" class="item icon left" title="">
+				<!--<a id="left-button" href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>-->
 			</div>
-			<div class="pane item-fixed" id="page1">
+			<div id="content" class="pane item-fixed" id="page1">
 				<h1>Do you want to identify a font?</h1>
 				<h2>Upload an image showing us what you'd like to find.</h2>
 				<br />
 				<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone"></form>
 			</div>
-			<div class="item icon right" title="Continue?">
-				<a href="bb.html"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+			<div id="right-arrow-container" class="item icon right" title="Continue?">
+				<a id="right-button" href="bb.html">
+					<img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img>
+				</a>
 			</div>
 		</div>
-		<div class="misc text-center">
+		<div id="extra" class="misc text-center">
 			Or you can <a href="/browse">browse</a> previous matches.
 		</div>
 	</div>
@@ -51,6 +53,43 @@
 		  dictDefaultMessage: "Drag and drop your image here.",
 		  dictMaxFilesExceeded: "We can only deal with one at a time!"
 		};
+
+		// Fade to next page
+		function fadeout (next) {
+			$('#content').animate({
+				opacity: 0
+			}, 500, function(){
+				location = next;
+			});
+
+			$('#extra').animate({
+				opacity: 0
+			}, 500);
+		};
+
+		// Fade into page
+		function fadein () {
+			$('#content').animate({
+				opacity: 1
+			}, 500);
+
+			$('#extra').animate({
+				opacity: 1
+			}, 500);
+
+			$('#right-arrow-container').animate({
+				opacity: 1
+			}, 500);
+		};
+
+		// Fade in!
+		fadein();
+
+		// Add onClick handlers
+		$("#right-button").attr("href", "#");
+		$("#right-button").on('click', function(){
+			fadeout("bb.html")
+		});
 
 		// Replace embedded images with inline-SVG
 		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
