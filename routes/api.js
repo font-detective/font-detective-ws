@@ -49,7 +49,7 @@ function getS3(callback, folder, key, bucket, callback) {
 // Gets the link at which the resource may be accessed
 function getLink(folder, key, bucket) {
   var fqkey = (folder != "") ? folder + "/" + key : key;
-  return "https://s3-eu-west-1.amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
+  return "https://s3-" + AWS.config.region + ".amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
 }
 
 // Uploads a file, first to the server, then to S3.
