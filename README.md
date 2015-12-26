@@ -6,4 +6,22 @@
                                                                 
 + - - - Identify fonts in the cloud! - - - - - - - - - - - - - +
 
+WebSockets Protocol
+===================
+
+The following WebSockets protocol has been defined for use within the application.
+
+Client
+------
+```
+wsid: [unique ID]
+```
+
+Web server
+----------
+```
+state: [uploaded]
+url: [image URL]
+```
+
 Left and Right icons by Heberti Almeida from the Noun Project

@@ -43,6 +43,41 @@ if (env === 'production') {
   // TODO
 }
 
+/**
+ * WebSockets
+ */
+
+var WebSocketServer = require('ws').Server,
+  wss = new WebSocketServer({port: 8080});
+
+var CLIENTS = [];
+
+// TODO:
+//  * Prune list of connections periodically - maybe automatically?
+//  * Add WSID to wss.clients object instead!
+
+wss.on('connection', function(ws) {
+  CLIENTS.push(ws);
+  ws.wsids = [];
+
+  ws.on('message', function(message) {
+    console.log('received: %s', message);
+
+    ws.send("url: https://s3-eu-west-1.amazonaws.com/fontdetective/img/moss.jpg");
+
+    // WSID message
+    var wsid = /^wsid: (.+)$/;
+    var result = message.match(wsid);
+    ws.wsids.push(result[1]);
+    console.log(ws.wsids);
+  });
+});
+
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(ws) {
+    ws.send(data);
+  });
+};
 
 /**
  * Routes

@@ -148,3 +148,8 @@ svg:hover path {
 #right-arrow-container {
     opacity: 0;
 }
+
+a .disabled {
+    pointer-events: none;
+    cursor: default;
+}

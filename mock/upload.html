@@ -18,16 +18,21 @@
 	<div class="column">
 		<div class="row">
 			<div id="left-arrow-container" class="item icon left" title="">
-				<!--<a id="left-button" href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>-->
+				<!--<a id="left-button" class="disabled"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>-->
 			</div>
 			<div id="content" class="pane item-fixed" id="page1">
 				<h1>Do you want to identify a font?</h1>
 				<h2>Upload an image showing us what you'd like to find.</h2>
 				<br />
-				<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone"></form>
+				<noscript>
+					<p>We're sorry to tell you that you must <a href="http://www.enable-javascript.com/" target="_blank">enable JavaScript</a> to continue.</p>
+				</noscript>
+				<form action="http://localhost:3000/api/upload" id="fileUpload" class="dropzone">
+					<input id="wsid" type="hidden" name="wsid" value="" />
+				</form>
 			</div>
 			<div id="right-arrow-container" class="item icon right" title="Continue?">
-				<a id="right-button" href="bb.html">
+				<a id="right-button" class="disabled">
 					<img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img>
 				</a>
 			</div>
@@ -53,6 +58,109 @@
 		  dictDefaultMessage: "Drag and drop your image here.",
 		  dictMaxFilesExceeded: "We can only deal with one at a time!"
 		};
+
+		// Replace embedded images with inline-SVG
+		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
+		jQuery('img.svg').each(function(){
+            var $img = jQuery(this);
+            var imgID = $img.attr('id');
+            var imgClass = $img.attr('class');
+            var imgURL = $img.attr('src');
+
+            jQuery.get(imgURL, function(data) {
+                // Get the SVG tag, ignore the rest
+                var $svg = jQuery(data).find('svg');
+
+                // Add replaced image's ID to the new SVG
+                if(typeof imgID !== 'undefined') {
+                    $svg = $svg.attr('id', imgID);
+                }
+                // Add replaced image's classes to the new SVG
+                if(typeof imgClass !== 'undefined') {
+                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+                }
+
+                // Remove any invalid XML tags as per http://validator.w3.org
+                $svg = $svg.removeAttr('xmlns:a');
+
+                // Replace image with new SVG
+                $img.replaceWith($svg);
+            }, 'xml');
+        });
+
+		// Generate a random string for an ID
+		// http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
+        var wsid = (0|Math.random()*9e6).toString(36);
+
+        // WebSocket events
+        function onOpen(evt) {
+			// Set field in upload form
+	        $('#wsid').val(wsid);
+
+	        // Send ID
+	        send("wsid: " + wsid);
+		}
+
+		function onClose(evt) {
+			console.log("WebSocket connection closed");
+		}
+
+		function onMessage(evt) {
+			console.log("Received: " + evt.data);
+
+			// State messages
+			var state = /^state: (\w+)$/;
+			var result = evt.data.match(wsid);
+			if (result) {
+				switch (result[1]) {
+					case "uploaded":
+						console.log("Upload complete!");
+					break;
+
+					default:
+						console.error("Unknown state message received via WebSocket");
+					break;
+				}
+				return;
+			}
+
+			// URL message
+			var url = /^url: ((https?:\/\/)?(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})$/;
+			result = evt.data.match(url);
+			if (result) {
+				// Change next button destination to include GET
+				$("#right-button").attr("href", "#");
+				$("#right-button").on('click', function(){
+					fadeout("bb.html?img=" + result[1]);
+				});
+
+				// Enable next button by removing disabled class
+				$("#right-button").removeClass("disabled");
+				return;
+			}
+		}
+
+		function onError(evt) {
+			console.error(evt);
+		}
+
+		// WebSocket function wrappers
+		function send(message) {
+			websocket.send(message);
+		}
+
+		function close() {
+			websocket.close();
+		}
+
+        // Instantiate WebSocket object
+        var wsUri = "ws://localhost:8080";
+        var websocket = new WebSocket(wsUri);
+
+	    websocket.onopen = function(evt) { onOpen(evt) };
+	    websocket.onclose = function(evt) { onClose(evt) };
+	    websocket.onmessage = function(evt) { onMessage(evt) };
+	    websocket.onerror = function(evt) { onError(evt) };
 
 		// Fade to next page
 		function fadeout (next) {
@@ -84,41 +192,6 @@
 
 		// Fade in!
 		fadein();
-
-		// Add onClick handlers
-		$("#right-button").attr("href", "#");
-		$("#right-button").on('click', function(){
-			fadeout("bb.html")
-		});
-
-		// Replace embedded images with inline-SVG
-		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
-		jQuery('img.svg').each(function(){
-            var $img = jQuery(this);
-            var imgID = $img.attr('id');
-            var imgClass = $img.attr('class');
-            var imgURL = $img.attr('src');
-
-            jQuery.get(imgURL, function(data) {
-                // Get the SVG tag, ignore the rest
-                var $svg = jQuery(data).find('svg');
-
-                // Add replaced image's ID to the new SVG
-                if(typeof imgID !== 'undefined') {
-                    $svg = $svg.attr('id', imgID);
-                }
-                // Add replaced image's classes to the new SVG
-                if(typeof imgClass !== 'undefined') {
-                    $svg = $svg.attr('class', imgClass+' replaced-svg');
-                }
-
-                // Remove any invalid XML tags as per http://validator.w3.org
-                $svg = $svg.removeAttr('xmlns:a');
-
-                // Replace image with new SVG
-                $img.replaceWith($svg);
-            }, 'xml');
-        });
 	</script>
 </body>
 </html>

@@ -22,7 +22,7 @@
 				<h1>Select the text</h1>
 				<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
 				<br />
-				<img id="sample" src="https://s3-eu-west-1.amazonaws.com/fontdetective/img/moss.jpg" />
+				<img id="sample" src="https://s3-eu-west-1.amazonaws.com/fontdetective/img/sample.jpg" />
 			</div>
 			<div id="right-arrow-container" class="item icon right" title="Continue?">
 				<a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
@@ -44,6 +44,23 @@
 		        }
 		    });
 		});
+
+		// Retrieve GET variables
+		// https://css-tricks.com/snippets/javascript/get-url-variables/
+		// https://css-tricks.com/license/
+		function getQueryVariable (variable) {
+	       var query = window.location.search.substring(1);
+	       var vars = query.split("&");
+	       for (var i=0; i<vars.length; i++) {
+               var pair = vars[i].split("=");
+               if (pair[0] == variable) {return pair[1];}
+	       }
+	       return false;
+		}
+
+		// Retrieve image URL
+		var image = getQueryVariable("img");
+		$("#sample").attr("src", image);
 
 		// Fade to next page
 		function fadeout (next) {

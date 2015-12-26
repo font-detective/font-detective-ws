@@ -65,6 +65,7 @@ exports.upload = function (req, res) {
         fstream.on('close', function () {
             putFileS3(path, defaultFolder, filename, defaultBucket, function(){
                 console.log(getLink(defaultFolder, filename, defaultBucket));
+                // TODO - send a message back via WS
                 res.redirect('back');
                 fs.unlink(path);
             });
