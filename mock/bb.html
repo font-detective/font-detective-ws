@@ -60,15 +60,15 @@
 			  	var w = $("#sample").width();
 			  	var h = $("#sample").height();
 
-			  	var xratio = parseFloat(img.w) / parseFloat(w);
-			  	var yratio = parseFloat(img.h) / parseFloat(h);
+			  	var xratio = img.w / w;
+			  	var yratio = img.h / h;
 
 			  	var selection = ias.getSelection();
 			  	ias.setSelection(
-			  		parseFloat(selection.x1) / xratio,
-			  		parseFloat(selection.y1) / yratio,
-			  		parseFloat(selection.x2) / xratio,
-			  		parseFloat(selection.y2) / yratio,
+			  		selection.x1 / xratio,
+			  		selection.y1 / yratio,
+			  		selection.x2 / xratio,
+			  		selection.y2 / yratio,
 			  		true);
 
 			  	img.w = w;
