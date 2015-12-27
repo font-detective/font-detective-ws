@@ -37,22 +37,20 @@
 			var ias = {};
 			var img = {};
 
-			$(document).ready(function() {
-			    ias = $('img#sample').imgAreaSelect({
+			$("#sample").load(function() {
+				// Grab initial image dimensions
+				img.w = $("#sample").width();
+				img.h = $("#sample").height();
+
+				// Set up selection library
+				// Initial selection is centered
+				ias = $('#sample').imgAreaSelect({
 			    	instance: true,
-			    	x1: 120, y1: 90, x2: 280, y2: 210,
+			    	x1: img.w/4, y1: img.h/4, x2: 3*(img.w/4), y2: 3*(img.h/4),
 			        handles: true,
 			        onSelectEnd: function() {
 			        }
 			    });
-			});
-
-			// Grab initial image dimensions
-			$("#sample").load(function() {
-				img.w = $("#sample").width();
-				img.h = $("#sample").height();
-
-				// TODO: expand DIV accordingly
 			});
 
 			// Move selection area when window is resized

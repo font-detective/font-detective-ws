@@ -30,8 +30,8 @@ footer {
 }
 
 .pane img {
+    display: inline-block;
     max-width: 100%;
-    overflow: hidden;
 }
 
 .pane h1 {
@@ -94,7 +94,6 @@ footer {
     -ms-flex: none;
     flex: none;
     max-width: 50%;
-    max-height: 60%;
 }
 
 .column .item {
