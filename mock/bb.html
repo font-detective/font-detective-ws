@@ -1,147 +1,177 @@
-<html>
-<head>
-	<meta charset="utf-8" />
-	<title>Font Detective > Select the text</title>
-	<link rel="stylesheet" href="./css/style.css" />
-	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+	<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Font Detective > Select the text</title>
+		<link rel="stylesheet" href="./css/style.css" />
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
 
-	<!-- imgareaselect canvas image selection -->
-	<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
-	<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
-	<link  href="./vendor/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" rel="stylesheet" />
-	<!-- !imgareaselect -->
-</head>
-<body>
-	<footer></footer>
-	<div class="column">
-		<div class="row">
-			<div id="left-arrow-container" class="item icon left" title="Go back?">
-				<a id="left-button" href="upload.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+		<!-- imgareaselect canvas image selection -->
+		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
+		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
+		<link  href="./vendor/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" rel="stylesheet" />
+		<!-- !imgareaselect -->
+	</head>
+	<body>
+		<footer></footer>
+		<div class="column">
+			<div class="row">
+				<div id="left-arrow-container" class="item icon left" title="Go back?">
+					<a id="left-button" href="upload.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+				</div>
+				<div id="content" class="pane item-fixed">
+					<h1>Select the text</h1>
+					<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
+					<br />
+					<img id="sample" src="https://s3-eu-west-1.amazonaws.com/fontdetective/img/sample.jpg" alt="Your sample image"></img>
+				</div>
+				<div id="right-arrow-container" class="item icon right" title="Continue?">
+					<a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+				</div>
 			</div>
-			<div id="content" class="pane item-fixed">
-				<h1>Select the text</h1>
-				<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
-				<br />
-				<img id="sample" src="https://s3-eu-west-1.amazonaws.com/fontdetective/img/sample.jpg" />
-			</div>
-			<div id="right-arrow-container" class="item icon right" title="Continue?">
-				<a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+			<div id="extra" class="misc text-center">
+				Go <a href="upload.html">back</a> to upload a new image.
 			</div>
 		</div>
-		<div id="extra" class="misc text-center">
-			Go <a href="upload.html">back</a> to upload a new image.
-		</div>
-	</div>
-	<script type="text/javascript">
-		var ias = {};
+		<script type="text/javascript">
+			// Sorry about globals.
+			var ias = {};
+			var img = {};
 
-		$(document).ready(function () {
-		    ias = $('img#sample').imgAreaSelect({
-		    	instance: true,
-		    	x1: 120, y1: 90, x2: 280, y2: 210,
-		        handles: true,
-		        onSelectEnd: function() {
-		        }
-		    });
-		});
-
-		// Retrieve GET variables
-		// https://css-tricks.com/snippets/javascript/get-url-variables/
-		// https://css-tricks.com/license/
-		function getQueryVariable (variable) {
-	       var query = window.location.search.substring(1);
-	       var vars = query.split("&");
-	       for (var i=0; i<vars.length; i++) {
-               var pair = vars[i].split("=");
-               if (pair[0] == variable) {return pair[1];}
-	       }
-	       return false;
-		}
-
-		// Retrieve image URL
-		var image = getQueryVariable("img");
-		if (image) {
-			$("#sample").attr("src", image);
-		}
-
-		// Fade to next page
-		function fadeout (next) {
-			$('#content').animate({
-				opacity: 0
-			}, 500, function(){
-				location = next;
+			$(document).ready(function() {
+			    ias = $('img#sample').imgAreaSelect({
+			    	instance: true,
+			    	x1: 120, y1: 90, x2: 280, y2: 210,
+			        handles: true,
+			        onSelectEnd: function() {
+			        }
+			    });
 			});
 
-			$('#extra').animate({
-				opacity: 0
-			}, 500);
+			// Grab initial image dimensions
+			$("#sample").load(function() {
+				img.w = $("#sample").width();
+				img.h = $("#sample").height();
 
-			$('#left-arrow-container').animate({
-				opacity: 0
-			}, 500);
-		};
+				// TODO: expand DIV accordingly
+			});
 
-		// Fade into page
-		function fadein () {
-			$('#content').animate({
-				opacity: 1
-			}, 500);
+			// Move selection area when window is resized
+	        $(window).resize(function() {
+			  	var w = $("#sample").width();
+			  	var h = $("#sample").height();
 
-			$('#extra').animate({
-				opacity: 1
-			}, 500);
+			  	var xratio = parseFloat(img.w) / parseFloat(w);
+			  	var yratio = parseFloat(img.h) / parseFloat(h);
 
-			$('#left-arrow-container').animate({
-				opacity: 1
-			}, 500);
+			  	var selection = ias.getSelection();
+			  	ias.setSelection(
+			  		parseFloat(selection.x1) / xratio,
+			  		parseFloat(selection.y1) / yratio,
+			  		parseFloat(selection.x2) / xratio,
+			  		parseFloat(selection.y2) / yratio,
+			  		true);
 
-			$("#right-arrow-container").css('opacity', '1');
-		}
+			  	img.w = w;
+			  	img.h = h;
+			});
 
-		// Fade in!
-		fadein();
+			// Retrieve GET variables
+			// https://css-tricks.com/snippets/javascript/get-url-variables/
+			// https://css-tricks.com/license/
+			function getQueryVariable (variable) {
+		       var query = window.location.search.substring(1);
+		       var vars = query.split("&");
+		       for (var i=0; i<vars.length; i++) {
+	               var pair = vars[i].split("=");
+	               if (pair[0] == variable) {return pair[1];}
+		       }
+		       return false;
+			}
 
-		// Add onClick handlers
-		$("#left-button").attr("href", "#");
-		$("#left-button").on('click', function(){
-			fadeout("upload.html")
-		});
+			// Retrieve image URL
+			var image = getQueryVariable("img");
+			if (image) {
+				$("#sample").attr("src", image);
+			}
 
-		$("#right-button").attr("href", "#");
-		$("#right-button").on('click', function(){
-			// TODO: send the bounding box to S3
-			alert(JSON.stringify(ias.getSelection()));
-			// fadeout("process.html")
-		});
+			// Fade to next page
+			function fadeout (next) {
+				$('#content').animate({
+					opacity: 0
+				}, 500, function(){
+					location = next;
+				});
 
-		// Replace embedded images with inline-SVG
-		// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
-		jQuery('img.svg').each(function(){
-            var $img = jQuery(this);
-            var imgID = $img.attr('id');
-            var imgClass = $img.attr('class');
-            var imgURL = $img.attr('src');
+				$('#extra').animate({
+					opacity: 0
+				}, 500);
 
-            jQuery.get(imgURL, function(data) {
-                // Get the SVG tag, ignore the rest
-                var $svg = jQuery(data).find('svg');
+				$('#left-arrow-container').animate({
+					opacity: 0
+				}, 500);
+			};
 
-                // Add replaced image's ID to the new SVG
-                if(typeof imgID !== 'undefined') {
-                    $svg = $svg.attr('id', imgID);
-                }
-                // Add replaced image's classes to the new SVG
-                if(typeof imgClass !== 'undefined') {
-                    $svg = $svg.attr('class', imgClass+' replaced-svg');
-                }
+			// Fade into page
+			function fadein () {
+				$('#content').animate({
+					opacity: 1
+				}, 500);
 
-                // Remove any invalid XML tags as per http://validator.w3.org
-                $svg = $svg.removeAttr('xmlns:a');
+				$('#extra').animate({
+					opacity: 1
+				}, 500);
 
-                // Replace image with new SVG
-                $img.replaceWith($svg);
-            }, 'xml');
-        });
-	</script>
-</body>
-</html>
+				$('#left-arrow-container').animate({
+					opacity: 1
+				}, 500);
+
+				$("#right-arrow-container").css('opacity', '1');
+			}
+
+			// Fade in!
+			fadein();
+
+			// Add onClick handlers
+			$("#left-button").attr("href", "#");
+			$("#left-button").on('click', function(){
+				fadeout("upload.html")
+			});
+
+			$("#right-button").attr("href", "#");
+			$("#right-button").on('click', function(){
+				// TODO: send the bounding box to S3
+				alert(JSON.stringify(ias.getSelection()));
+				// fadeout("process.html")
+			});
+
+			// Replace eachmbedded images with inline-SVG
+			// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
+			jQuery('img.svg').each(function(){
+	            var $img = jQuery(this);
+	            var imgID = $img.attr('id');
+	            var imgClass = $img.attr('class');
+	            var imgURL = $img.attr('src');
+
+	            jQuery.get(imgURL, function(data) {
+	                // Get the SVG tag, ignore the rest
+	                var $svg = jQuery(data).find('svg');
+
+	                // Add replaced image's ID to the new SVG
+	                if(typeof imgID !== 'undefined') {
+	                    $svg = $svg.attr('id', imgID);
+	                }
+	                // Add replaced image's classes to the new SVG
+	                if(typeof imgClass !== 'undefined') {
+	                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+	                }
+
+	                // Remove any invalid XML tags as per http://validator.w3.org
+	                $svg = $svg.removeAttr('xmlns:a');
+
+	                // Replace image with new SVG
+	                $img.replaceWith($svg);
+	            }, 'xml');
+	        });
+		</script>
+	</body>
+	</html>
