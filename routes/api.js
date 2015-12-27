@@ -21,16 +21,15 @@ wss.on('connection', function(ws) {
     var wsid = /^wsid: (.+)$/;
     var result = message.match(wsid);
     ws.wsids.push(result[1]);
-    console.log(ws.wsids);
   });
 
   ws.on('close', function(message) {
-    console.log("connection terminated");
+    console.log("WebSocket: connection terminated");
   });
 });
 
 wss.on('error', function close(error) {
-  console.error('error: %s', error);
+  console.error('WebSocket error: %s', error);
 });
 
 wss.broadcast = function broadcast(data) {
@@ -121,12 +120,12 @@ exports.upload = function (req, res) {
     file.pipe(fstream);
     fstream.on('close', function () {
       putFileS3(path, defaultFolder, filename, defaultBucket, function(){
-        // TODO - send a message back via WS
-        console.log(wsid);
+        // Send a message back via WS
         var ws = wss.findClient(wsid);
         if (ws) {
-          console.log("Sending url message with data " + getLink(defaultFolder, filename, defaultBucket));
           ws.send("url: " + getLink(defaultFolder, filename, defaultBucket));
+        } else {
+          console.error("Could not find websocket with WSID. They must have disconnected.");
         }
         res.redirect('back');
         fs.unlink(path);
