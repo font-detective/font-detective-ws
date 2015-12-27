@@ -135,9 +135,8 @@ svg:hover path {
     fill: red;
 }
 
-a .disabled {
-    pointer-events: none;
-    cursor: default;
+.disabled {
+    cursor: not-allowed;
 }
 
 .left {
