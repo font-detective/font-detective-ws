@@ -60,7 +60,9 @@
 
 		// Retrieve image URL
 		var image = getQueryVariable("img");
-		$("#sample").attr("src", image);
+		if (image) {
+			$("#sample").attr("src", image);
+		}
 
 		// Fade to next page
 		function fadeout (next) {
