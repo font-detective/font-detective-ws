@@ -44,42 +44,6 @@ if (env === 'production') {
 }
 
 /**
- * WebSockets
- */
-
-var WebSocketServer = require('ws').Server,
-  wss = new WebSocketServer({port: 8080});
-
-var CLIENTS = [];
-
-// TODO:
-//  * Prune list of connections periodically - maybe automatically?
-//  * Add WSID to wss.clients object instead!
-
-wss.on('connection', function(ws) {
-  CLIENTS.push(ws);
-  ws.wsids = [];
-
-  ws.on('message', function(message) {
-    console.log('received: %s', message);
-
-    ws.send("url: https://s3-eu-west-1.amazonaws.com/fontdetective/img/moss.jpg");
-
-    // WSID message
-    var wsid = /^wsid: (.+)$/;
-    var result = message.match(wsid);
-    ws.wsids.push(result[1]);
-    console.log(ws.wsids);
-  });
-});
-
-wss.broadcast = function broadcast(data) {
-  wss.clients.forEach(function each(ws) {
-    ws.send(data);
-  });
-};
-
-/**
  * Routes
  */
 
@@ -88,7 +52,7 @@ app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
 
 // JSON API
-app.post('/api/upload', api.upload);
+app.post('/api/upload/:wsid', api.upload);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

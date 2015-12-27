@@ -5,6 +5,57 @@
 var fs = require('fs');
 var AWS = require('aws-sdk');
 
+/**
+ * WebSockets
+ */
+
+var WebSocketServer = require('ws').Server,
+  wss = new WebSocketServer({port: 8080});
+
+wss.on('connection', function(ws) {
+  // Extend object to include WSIDs
+  ws.wsids = [];
+
+  ws.on('message', function(message) {
+    // WSID message
+    var wsid = /^wsid: (.+)$/;
+    var result = message.match(wsid);
+    ws.wsids.push(result[1]);
+    console.log(ws.wsids);
+  });
+
+  ws.on('close', function(message) {
+    console.log("connection terminated");
+  });
+});
+
+wss.on('error', function close(error) {
+  console.error('error: %s', error);
+});
+
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(ws) {
+    ws.send(data);
+  });
+};
+
+wss.findClient = function findClient(wsid) {
+  var _ws = false;
+  wss.clients.some(function outer(ws) {
+    ws.wsids.some(function inner(_wsid) {
+      if (_wsid === wsid) {
+        return (_ws = ws);
+      }
+    });
+    return _ws;
+  });
+  return _ws;
+};
+
+/**
+ * AWS S3
+ */
+
 // Set location to Ireland
 AWS.config.region = "eu-west-1";
 
@@ -52,23 +103,34 @@ function getLink(folder, key, bucket) {
   return "https://s3-" + AWS.config.region + ".amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
 }
 
+/**
+ * API
+ */
+
 // Uploads a file, first to the server, then to S3.
 // Delete the local copy when complete
 exports.upload = function (req, res) {
-	var fstream;
-    req.pipe(req.busboy);
-    req.busboy.on('file', function (fieldname, file, filename) {
-        console.log("Uploading: " + filename);
-        var path = __dirname + '/../files/' + filename;
-        fstream = fs.createWriteStream(path);
-        file.pipe(fstream);
-        fstream.on('close', function () {
-            putFileS3(path, defaultFolder, filename, defaultBucket, function(){
-                console.log(getLink(defaultFolder, filename, defaultBucket));
-                // TODO - send a message back via WS
-                res.redirect('back');
-                fs.unlink(path);
-            });
-        });
+  var fstream;
+  var wsid = req.params.wsid;
+
+  req.pipe(req.busboy);
+  req.busboy.on('file', function (fieldname, file, filename) {
+    console.log("Uploading: " + filename);
+    var path = __dirname + '/../files/' + filename;
+    fstream = fs.createWriteStream(path);
+    file.pipe(fstream);
+    fstream.on('close', function () {
+      putFileS3(path, defaultFolder, filename, defaultBucket, function(){
+        // TODO - send a message back via WS
+        console.log(wsid);
+        var ws = wss.findClient(wsid);
+        if (ws) {
+          console.log("Sending url message with data " + getLink(defaultFolder, filename, defaultBucket));
+          ws.send("url: " + getLink(defaultFolder, filename, defaultBucket));
+        }
+        res.redirect('back');
+        fs.unlink(path);
+      });
     });
+  });
 }
