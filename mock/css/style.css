@@ -132,6 +132,15 @@ svg:hover path {
     fill: black;
 }
 
+.disabled svg:active path {
+    fill: red;
+}
+
+a .disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
 .left {
     float: right;
     text-align: right;
@@ -147,9 +156,4 @@ svg:hover path {
 #left-arrow-container,
 #right-arrow-container {
     opacity: 0;
-}
-
-a .disabled {
-    pointer-events: none;
-    cursor: default;
 }
