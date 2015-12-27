@@ -24,6 +24,10 @@
 		<meta name="theme-color" content="#ffffff">
 		<!-- !Favicon -->
 
+		<!-- WebSockets -->
+		<script src="./js/ws.js"></script>
+		<!-- !WebSockets -->
+
 		<!-- jQuery for SVG in-lining -->
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
 		<!-- !jQuery -->
@@ -98,16 +102,7 @@
 		    $('#fileUpload').attr("action", "http://localhost:3000/api/upload/" + uid);
 
 	        // WebSocket events
-	        function onOpen(evt) {
-		        // Send ID
-		        send("uid: " + uid);
-			}
-
-			function onClose(evt) {
-				console.log("WebSocket connection closed");
-			}
-
-			function onMessage(evt) {
+			function _onMessage(evt) {
 				console.log("Received: " + evt.data);
 
 				// State messages
@@ -142,27 +137,8 @@
 				}
 			}
 
-			function onError(evt) {
-				console.error(evt);
-			}
-
-			// WebSocket function wrappers
-			function send(message) {
-				websocket.send(message);
-			}
-
-			function close() {
-				websocket.close();
-			}
-
-	        // Instantiate WebSocket object
-	        var wsUri = "ws://localhost:8080";
-	        var websocket = new WebSocket(wsUri);
-
-		    websocket.onopen = function(evt) { onOpen(evt) };
-		    websocket.onclose = function(evt) { onClose(evt) };
-		    websocket.onmessage = function(evt) { onMessage(evt) };
-		    websocket.onerror = function(evt) { onError(evt) };
+	        // Override websocket event
+		    websocket.onmessage = function(evt) { _onMessage(evt) };
 
 		    // DropZone initialisation
 		    Dropzone.options.fileUpload = {

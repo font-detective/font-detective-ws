@@ -13,14 +13,23 @@ var WebSocketServer = require('ws').Server,
   wss = new WebSocketServer({port: 8080});
 
 wss.on('connection', function(ws) {
-  // Extend object to include WSIDs
-  ws.uids = [];
-
   ws.on('message', function(message) {
-    // WSID message
+    // UID message
     var uid = /^uid: (.+)$/;
     var result = message.match(uid);
-    ws.uids.push(result[1]);
+    if (result) {
+      if (!ws.uids) {
+        ws.uids = [];
+      }
+      ws.uids.push(result[1]);
+    }
+
+    // BB message
+    var bb = /^bb: (.+)$/;
+    result = message.match(bb);
+    if (result) {
+      console.log(JSON.parse(result[1]));
+    }
   });
 
   ws.on('close', function(message) {
@@ -41,11 +50,13 @@ wss.broadcast = function broadcast(data) {
 wss.findClient = function findClient(uid) {
   var _ws = false;
   wss.clients.some(function outer(ws) {
-    ws.uids.some(function inner(_uid) {
-      if (_uid === uid) {
-        return (_ws = ws);
-      }
-    });
+    if (ws.uids) {
+      ws.uids.some(function inner(_uid) {
+        if (_uid === uid) {
+          return (_ws = ws);
+        }
+      });
+    }
     return _ws;
   });
   return _ws;

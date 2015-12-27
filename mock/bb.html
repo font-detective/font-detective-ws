@@ -25,6 +25,10 @@
 		<meta name="theme-color" content="#ffffff">
 		<!-- !Favicon -->
 
+		<!-- WebSockets -->
+		<script src="./js/ws.js"></script>
+		<!-- !WebSockets -->
+
 		<!-- imgareaselect canvas image selection -->
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
@@ -165,7 +169,7 @@
 
 			$("#right-button").attr("href", "#");
 			$("#right-button").on('click', function(){
-				// TODO: Send the bounding box to S3
+				// Send the bounding box to S3
 				var selection = ias.getSelection();
 				var packet = {
 					selection: {
@@ -177,11 +181,11 @@
 						h: selection.height
 					},
 					image: img
-				}
-				alert(JSON.stringify(packet));
+				};
+				send("bb: " + JSON.stringify(packet));
 
 				// Transition to next page
-				fadeout("process.html")
+				fadeout("process.html?uid=" + uid);
 			});
 
 			// Replace eachmbedded images with inline-SVG
