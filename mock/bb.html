@@ -119,9 +119,9 @@
 			}
 
 			// Retrieve image URL
-			var image = getQueryVariable("img");
-			if (image) {
-				$("#sample").attr("src", image);
+			var imageUrl = getQueryVariable("img");
+			if (imageUrl) {
+				$("#sample").attr("src", imageUrl);
 			}
 
 			// Fade to next page
@@ -180,7 +180,9 @@
 						w: selection.width,
 						h: selection.height
 					},
-					image: img
+					image: img,
+					url: imageUrl,
+					uid: uid
 				};
 				send("bb: " + JSON.stringify(packet));
 

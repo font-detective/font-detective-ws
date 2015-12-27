@@ -5,6 +5,9 @@
 var fs = require('fs');
 var AWS = require('aws-sdk');
 
+// Set location to Ireland
+AWS.config.region = "eu-west-1";
+
 /**
  * WebSockets
  */
@@ -28,7 +31,22 @@ wss.on('connection', function(ws) {
     var bb = /^bb: (.+)$/;
     result = message.match(bb);
     if (result) {
-      console.log(JSON.parse(result[1]));
+      // Add to SimpleDB
+      // TODO
+
+      // Add new request to SQS
+      var request = JSON.parse(result[1]);
+      console.log(request);
+
+      // Check UID/URL match those received in request
+      // TODO
+
+      putSQS(defaultQueueUrl, JSON.stringify(request), function(err, data){
+        if (err) {
+          return console.error(err);
+        }
+        console.log("Added request to SQS successfully!");
+      });
     }
   });
 
@@ -63,11 +81,64 @@ wss.findClient = function findClient(uid) {
 };
 
 /**
- * AWS S3
+ * AWS SQS
  */
 
-// Set location to Ireland
-AWS.config.region = "eu-west-1";
+var sqs =  new AWS.SQS();
+var defaultQueueUrl = "https://sqs.eu-west-1.amazonaws.com/776851050546/fontdetective";
+
+// Puts a message into the queue
+function putSQS(queueUrl, value, callback) {
+  var attributes = {
+    uploaded: {
+      DataType: "String",
+      StringValue: Date.now().toString()
+      }
+  };
+  putWithAttributesSQS(queueUrl, value, attributes, callback);
+}
+
+function putWithAttributesSQS(queueUrl, value, attributes, callback) {
+  var params = {
+    MessageBody: value,
+    QueueUrl: queueUrl,
+    MessageAttributes: attributes
+  };
+  sqs.sendMessage(params, callback);
+}
+
+function removeSQS(message, queueUrl, callback) {
+    sqs.deleteMessage({
+      QueueUrl: queueUrl,
+        ReceiptHandle: message.ReceiptHandle
+    }, callback);
+};
+
+function receiveSQS(queueUrl, callback) {
+  sqs.receiveMessage({
+    QueueUrl: queueUrl,
+    MaxNumberOfMessages: 1,
+    VisibilityTimeout: 60,
+    WaitTimeSeconds: 3 
+  }, function(err, data) {
+    if (data.Messages) {
+      // Only one message to get...
+      var message = data.Messages[0];
+
+      // Do something useful ...
+      if (callback) {
+        callback(err, message);
+      }
+    } else {
+      // Queue is empty
+      callback(err, null);
+    }
+  });
+};
+
+/**
+ * AWS S3
+ */
 
 var s3 = new AWS.S3();
 var defaultBucket = "fontdetective";
@@ -108,7 +179,7 @@ function getS3(callback, folder, key, bucket, callback) {
 }
 
 // Gets the link at which the resource may be accessed
-function getLink(folder, key, bucket) {
+function getLinkS3(folder, key, bucket) {
   var fqkey = (folder != "") ? folder + "/" + key : key;
   return "https://s3-" + AWS.config.region + ".amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
 }
@@ -134,7 +205,7 @@ exports.upload = function (req, res) {
         // Send a message back via WS
         var ws = wss.findClient(uid);
         if (ws) {
-          ws.send("url: " + getLink(defaultFolder, filename, defaultBucket));
+          ws.send("url: " + getLinkS3(defaultFolder, filename, defaultBucket));
         } else {
           console.error("Could not find WebSocket connection with UID. They must have disconnected.");
         }
