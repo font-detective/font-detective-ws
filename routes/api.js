@@ -14,13 +14,13 @@ var WebSocketServer = require('ws').Server,
 
 wss.on('connection', function(ws) {
   // Extend object to include WSIDs
-  ws.wsids = [];
+  ws.uids = [];
 
   ws.on('message', function(message) {
     // WSID message
-    var wsid = /^wsid: (.+)$/;
-    var result = message.match(wsid);
-    ws.wsids.push(result[1]);
+    var uid = /^uid: (.+)$/;
+    var result = message.match(uid);
+    ws.uids.push(result[1]);
   });
 
   ws.on('close', function(message) {
@@ -38,11 +38,11 @@ wss.broadcast = function broadcast(data) {
   });
 };
 
-wss.findClient = function findClient(wsid) {
+wss.findClient = function findClient(uid) {
   var _ws = false;
   wss.clients.some(function outer(ws) {
-    ws.wsids.some(function inner(_wsid) {
-      if (_wsid === wsid) {
+    ws.uids.some(function inner(_uid) {
+      if (_uid === uid) {
         return (_ws = ws);
       }
     });
@@ -63,15 +63,15 @@ var defaultBucket = "fontdetective";
 var defaultFolder = "img";
 
 // Puts a file in specified (bucket, key)
-function putFileS3(filename, folder, key, bucket, callback) {
+function putFileS3(filename, folder, key, bucket, metadata, callback) {
   var body = fs.createReadStream(filename);
-  putS3(body, folder, key, bucket, callback);
+  putS3(body, folder, key, bucket, metadata, callback);
 }
 
 // Puts data in specified (bucket, key)
 // For now, this is public readable.
-function putS3(body, folder, key, bucket, callback) {
-  var metadata = { uploaded: Date.now().toString() };
+function putS3(body, folder, key, bucket, metadata, callback) {
+  metadata.uploaded = Date.now().toString();
   var fqkey = (folder != "") ? folder + "/" + key : key;
   var s3obj = new AWS.S3({params: {Bucket: bucket, Key: fqkey, Metadata: metadata, ACL:'public-read'}});
   s3obj.upload({Body: body}).
@@ -107,10 +107,10 @@ function getLink(folder, key, bucket) {
  */
 
 // Uploads a file, first to the server, then to S3.
-// Delete the local copy when complete
+// Deletes the local copy when complete
 exports.upload = function (req, res) {
   var fstream;
-  var wsid = req.params.wsid;
+  var uid = req.params.uid;
 
   req.pipe(req.busboy);
   req.busboy.on('file', function (fieldname, file, filename) {
@@ -119,17 +119,17 @@ exports.upload = function (req, res) {
     fstream = fs.createWriteStream(path);
     file.pipe(fstream);
     fstream.on('close', function () {
-      putFileS3(path, defaultFolder, filename, defaultBucket, function(){
+      putFileS3(path, defaultFolder, filename, defaultBucket, { uid: uid }, function(){
         // Send a message back via WS
-        var ws = wss.findClient(wsid);
+        var ws = wss.findClient(uid);
         if (ws) {
           ws.send("url: " + getLink(defaultFolder, filename, defaultBucket));
         } else {
-          console.error("Could not find websocket with WSID. They must have disconnected.");
+          console.error("Could not find WebSocket connection with UID. They must have disconnected.");
         }
         res.redirect('back');
         fs.unlink(path);
       });
     });
   });
-}
+};

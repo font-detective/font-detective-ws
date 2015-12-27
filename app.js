@@ -52,7 +52,7 @@ app.get('/', routes.index);
 app.get('/partials/:name', routes.partials);
 
 // JSON API
-app.post('/api/upload/:wsid', api.upload);
+app.post('/api/upload/:uid', api.upload);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

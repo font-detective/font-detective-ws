@@ -92,15 +92,15 @@
 
 			// Generate a random string for an ID
 			// http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
-	        var wsid = (0|Math.random()*9e6).toString(36);
+	        var uid = (0|Math.random()*9e6).toString(36);
 
 	        // Set field in upload form
-		    $('#fileUpload').attr("action", "http://localhost:3000/api/upload/" + wsid);
+		    $('#fileUpload').attr("action", "http://localhost:3000/api/upload/" + uid);
 
 	        // WebSocket events
 	        function onOpen(evt) {
 		        // Send ID
-		        send("wsid: " + wsid);
+		        send("uid: " + uid);
 			}
 
 			function onClose(evt) {
@@ -112,7 +112,7 @@
 
 				// State messages
 				var state = /^state: (\w+)$/;
-				var result = evt.data.match(wsid);
+				var result = evt.data.match(uid);
 				if (result) {
 					switch (result[1]) {
 						case "uploaded":
@@ -132,8 +132,8 @@
 				if (result) {
 					// Change next button destination to include GET
 					$("#right-button").attr("href", "#");
-					$("#right-button").on('click', function(){
-						fadeout("bb.html?img=" + result[1]);
+					$("#right-button").on('click', function() {
+						fadeout("bb.html?img=" + result[1] + "&uid=" + uid);
 					});
 
 					// Enable next button by removing disabled class
