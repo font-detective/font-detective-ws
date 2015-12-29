@@ -25,6 +25,10 @@
 		<meta name="theme-color" content="#ffffff">
 		<!-- !Favicon -->
 
+		<!-- URL variables -->
+		<script src="./js/queryVariable.js"></script>
+		<!-- !URL variables -->
+
 		<!-- WebSockets -->
 		<script src="./js/ws.js"></script>
 		<!-- !WebSockets -->
@@ -34,6 +38,10 @@
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
 		<link  href="./vendor/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" rel="stylesheet" />
 		<!-- !imgareaselect -->
+
+		<!-- In-line SVG replacement -->
+		<script src="./js/replaceSVG.js"></script>
+		<!-- !SVG -->
 	</head>
 	<body>
 		<header></header>
@@ -57,6 +65,9 @@
 			</div>
 		</div>
 		<script type="text/javascript">
+			// Replace IMG tags with .svg class with in-line SVG
+			replaceSVG();
+
 			// Sorry about globals.
 			var ias = {};
 			var img = {};
@@ -96,19 +107,6 @@
 			  	img.w = w;
 			  	img.h = h;
 			});
-
-			// Retrieve GET variables
-			// https://css-tricks.com/snippets/javascript/get-url-variables/
-			// https://css-tricks.com/license/
-			function getQueryVariable (variable) {
-		       var query = window.location.search.substring(1);
-		       var vars = query.split("&");
-		       for (var i=0; i<vars.length; i++) {
-	               var pair = vars[i].split("=");
-	               if (pair[0] == variable) {return pair[1];}
-		       }
-		       return false;
-			}
 
 			// Get client ID
 			var uid = getQueryVariable("uid");
@@ -199,35 +197,6 @@
 				// Transition to next page
 				fadeout("process.html?uid=" + uid, false);
 			});
-
-			// Replace eachmbedded images with inline-SVG
-			// http://stackoverflow.com/questions/11978995/how-to-change-color-of-svg-image-using-css-jquery-svg-image-replacement
-			jQuery('img.svg').each(function(){
-	            var $img = jQuery(this);
-	            var imgID = $img.attr('id');
-	            var imgClass = $img.attr('class');
-	            var imgURL = $img.attr('src');
-
-	            jQuery.get(imgURL, function(data) {
-	                // Get the SVG tag, ignore the rest
-	                var $svg = jQuery(data).find('svg');
-
-	                // Add replaced image's ID to the new SVG
-	                if(typeof imgID !== 'undefined') {
-	                    $svg = $svg.attr('id', imgID);
-	                }
-	                // Add replaced image's classes to the new SVG
-	                if(typeof imgClass !== 'undefined') {
-	                    $svg = $svg.attr('class', imgClass+' replaced-svg');
-	                }
-
-	                // Remove any invalid XML tags as per http://validator.w3.org
-	                $svg = $svg.removeAttr('xmlns:a');
-
-	                // Replace image with new SVG
-	                $img.replaceWith($svg);
-	            }, 'xml');
-	        });
 		</script>
 	</body>
 </html>
