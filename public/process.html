@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Font Detective > Select the text</title>
+		<title>Font Detective > Processing your results</title>
 		<link rel="stylesheet" href="./css/style.css" />
 		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
 
@@ -29,74 +29,36 @@
 		<script src="./js/ws.js"></script>
 		<!-- !WebSockets -->
 
-		<!-- imgareaselect canvas image selection -->
+		<!-- jQuery for SVG in-lining et al -->
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
-		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.imgareaselect.pack.js"></script>
-		<link  href="./vendor/jquery.imgareaselect-0.9.10/css/imgareaselect-default.css" rel="stylesheet" />
-		<!-- !imgareaselect -->
+		<!-- !jQuery -->
+
+		<!-- spin.js for loading spinner -->
+		<script src="./vendor/spin.js/js/spin.min.js"></script>
+		<!-- !spin.js -->
 	</head>
 	<body>
 		<header></header>
 		<div class="column">
 			<div class="row">
 				<div id="left-arrow-container" class="item icon left" title="Go back?">
-					<a id="left-button" href="index.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+					<a id="left-button" href="bb.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
 				</div>
 				<div id="content" class="pane item-fixed">
-					<h1>Select the text</h1>
-					<h2>Click and drag to move the highlighted region to the region containing the text.</h2>
+					<h1>Processing your results</h1>
+					<h2>We are trying to identify the font. We'll update the page when they're in!</h2>
 					<br />
-					<img id="sample" src="https://s3-eu-west-1.amazonaws.com/fontdetective/img/sample.jpg" alt="Your sample image"></img>
+					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
 				</div>
 				<div id="right-arrow-container" class="item icon right" title="Continue?">
-					<a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a>
+					<!-- <a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a> -->
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Go <a href="upload.html">back</a> to upload a new image.
+				Want to <a href="upload.html" target="_blank">upload</a> a new image while you wait?
 			</div>
 		</div>
 		<script type="text/javascript">
-			// Sorry about globals.
-			var ias = {};
-			var img = {};
-
-			$("#sample").load(function() {
-				// Grab initial image dimensions
-				img.w = $("#sample").width();
-				img.h = $("#sample").height();
-
-				// Set up selection library
-				// Initial selection is centered
-				ias = $('#sample').imgAreaSelect({
-			    	instance: true,
-			    	x1: img.w/4, y1: img.h/4, x2: 3*(img.w/4), y2: 3*(img.h/4),
-			        handles: true,
-			        onSelectEnd: function() {
-			        }
-			    });
-			});
-
-			// Move selection area when window is resized
-	        $(window).resize(function() {
-			  	var w = $("#sample").width();
-			  	var h = $("#sample").height();
-
-			  	var xratio = img.w / w;
-			  	var yratio = img.h / h;
-
-			  	var selection = ias.getSelection();
-			  	ias.setSelection(
-			  		selection.x1 / xratio,
-			  		selection.y1 / yratio,
-			  		selection.x2 / xratio,
-			  		selection.y2 / yratio,
-			  		true);
-
-			  	img.w = w;
-			  	img.h = h;
-			});
-
 			// Retrieve GET variables
 			// https://css-tricks.com/snippets/javascript/get-url-variables/
 			// https://css-tricks.com/license/
@@ -125,8 +87,35 @@
 				$("#sample").attr("src", imageUrl);
 			}
 
+			// Set processing spinner in motion
+			// http://fgnass.github.io/spin.js/
+			var opts = {
+			  lines: 13 // The number of lines to draw
+			, length: 28 // The length of each line
+			, width: 8 // The line thickness
+			, radius: 21 // The radius of the inner circle
+			, scale: 0.5 // Scales overall size of the spinner
+			, corners: 1 // Corner roundness (0..1)
+			, color: '#000' // #rgb or #rrggbb or array of colors
+			, opacity: 0.25 // Opacity of the lines
+			, rotate: 0 // The rotation offset
+			, direction: 1 // 1: clockwise, -1: counterclockwise
+			, speed: 1 // Rounds per second
+			, trail: 60 // Afterglow percentage
+			, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+			, zIndex: 2e9 // The z-index (defaults to 2000000000)
+			, className: 'spinner' // The CSS class to assign to the spinner
+			, top: '70%' // Top position relative to parent
+			, left: '50%' // Left position relative to parent
+			, shadow: false // Whether to render a shadow
+			, hwaccel: true // Whether to use hardware acceleration
+			, position: 'relative' // Element positioning
+			};
+			var target = document.getElementById('loading');
+			var spinner = new Spinner(opts).spin(target);
+
 			// Fade to next page
-			function fadeout (next, back) {
+			function fadeout (next) {
 				$('#content').animate({
 					opacity: 0
 				}, 500, function(){
@@ -137,18 +126,9 @@
 					opacity: 0
 				}, 500);
 
-				// Should only fade out if we're going back
-				if (back) {
-					$('#left-arrow-container').animate({
-						opacity: 0
-					}, 500);
-				}
-
-				if (!back) {
-					$('#right-arrow-container').animate({
-						opacity: 0
-					}, 500);
-				}
+				$('#left-arrow-container').animate({
+					opacity: 0
+				}, 500);
 			};
 
 			// Fade into page
@@ -164,9 +144,7 @@
 				$('#left-arrow-container').animate({
 					opacity: 1
 				}, 500);
-
-				$("#right-arrow-container").css('opacity', '1');
-			}
+			};
 
 			// Fade in!
 			fadein();
@@ -174,30 +152,7 @@
 			// Add onClick handlers
 			$("#left-button").attr("href", "#");
 			$("#left-button").on('click', function(){
-				fadeout("index.html", true)
-			});
-
-			$("#right-button").attr("href", "#");
-			$("#right-button").on('click', function(){
-				// Send the bounding box to S3
-				var selection = ias.getSelection();
-				var packet = {
-					selection: {
-						x1: selection.x1,
-						y1: selection.y1,
-						x2: selection.x2,
-						y2: selection.y2,
-						w: selection.width,
-						h: selection.height
-					},
-					image: img,
-					url: imageUrl,
-					uid: uid
-				};
-				sendWS("bb: " + JSON.stringify(packet));
-
-				// Transition to next page
-				fadeout("process.html?uid=" + uid, false);
+				fadeout("bb.html?uid=" + uid);
 			});
 
 			// Replace eachmbedded images with inline-SVG
