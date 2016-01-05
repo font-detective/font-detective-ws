@@ -61,7 +61,7 @@
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Go <a href="upload.html">back</a> to upload a new image.
+				Go <a id="misc-link" href="/">back</a> to upload a new image.
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -172,7 +172,11 @@
 			// Add onClick handlers
 			$("#left-button").attr("href", "#");
 			$("#left-button").on('click', function(){
-				fadeout("index.html", true)
+				fadeout("index.html", true);
+			});
+
+			$('#misc-link').click(function() {
+				fadeout("index.html", true);
 			});
 
 			$("#right-button").attr("href", "#");

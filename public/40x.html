@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Font Detective > Uh-oh!</title>
+		<link rel="stylesheet" href="./css/style.css" />
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+
+		<!-- Favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192"  href="./favicon/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+		<link rel="manifest" href="./favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="./favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+		<!-- !Favicon -->
+
+		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
+	</head>
+	<body>
+		<header></header>
+		<div class="column">
+			<div class="row">
+				<div id="left-arrow-container" class="item icon left" title="Go back?">
+				</div>
+				<div id="content" class="pane item-fixed">
+					<h1>Are you lost?</h1>
+					<h2>You seem to have found a broken link - or maybe you were just exploring?</h2>
+				</div>
+				<div id="right-arrow-container" class="item icon right" title="Continue?">
+				</div>
+			</div>
+			<div id="extra" class="misc text-center">
+				Go <a id="misc-link" href="/">back</a> to try again.
+			</div>
+		</div>
+		<script type="text/javascript">
+			// Fade to next page
+			function fadeout (next, back) {
+				$('#content').animate({
+					opacity: 0
+				}, 500, function(){
+					location = next;
+				});
+
+				$('#extra').animate({
+					opacity: 0
+				}, 500);
+			};
+
+			$('#misc-link').click(function() {
+				fadeout("/", true);
+			});
+
+			// Fade into page
+			function fadein () {
+				$('#content').animate({
+					opacity: 1
+				}, 500);
+
+				$('#extra').animate({
+					opacity: 1
+				}, 500);
+			}
+
+			// Fade in!
+			fadein();
+		</script>
+	</body>
+</html>

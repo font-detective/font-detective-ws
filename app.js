@@ -50,12 +50,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 // The 404 route.
 // KEEP THIS AS THE LAST ROUTE
 app.get('*', function(req, res){
-  res.send("Sorry, I\'m not sure where to find that.", 404);
+  res.status(404);
+
+  if (req.accepts('html')) {
+    res.sendfile(__dirname + '/public/40x.html');
+    return;
+  }
+
+  if (req.accepts('json')) {
+    res.send({ error: 'Not found' });
+    return;
+  }
+
+  res.type('txt').send('Not found');
 });
 
 
 /**
- * Start Server
+ * Start server
  */
 
 http.createServer(app).listen(app.get('port'), function () {

@@ -65,7 +65,7 @@
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Or you can <a href="/browse">browse</a> previous matches.
+				Or you can <a id="misc-link" href="/browse">browse</a> previous matches.
 			</div>
 		</div>
 		<script>
@@ -151,6 +151,10 @@
 					opacity: 0
 				}, 500);
 			};
+
+			$('#misc-link').click(function() {
+				fadeout("browse.html", true);
+			});
 
 			// Fade into page
 			function fadein () {
