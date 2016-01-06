@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lukem512/font-detective.git"
+    "url": "https://github.com/font-detective/font-detective-ws.git"
   },
   "scripts": {
     "start": "node app.js"

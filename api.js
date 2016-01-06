@@ -1,4 +1,4 @@
-/*
+  /*
  * Serve JSON to our AngularJS client
  */
 
@@ -141,7 +141,7 @@ function receiveSQS(queueUrl, callback) {
  */
 
 var s3 = new AWS.S3();
-var defaultBucket = "fontdetective";
+var defaultBucket = "font-detective-image-bucket";
 var defaultFolder = "img";
 
 // Puts a file in specified (bucket, key)
@@ -201,11 +201,12 @@ exports.upload = function (req, res) {
     fstream = fs.createWriteStream(path);
     file.pipe(fstream);
     fstream.on('close', function () {
-      putFileS3(path, defaultFolder, filename, defaultBucket, { uid: uid }, function(){
+      var key = (0|Math.random()*9e6).toString(36) + filename.replace(/ /g,'');
+      putFileS3(path, defaultFolder, key, defaultBucket, { uid: uid }, function(){
         // Send a message back via WS
         var ws = wss.findClient(uid);
         if (ws) {
-          ws.send("url: " + getLinkS3(defaultFolder, filename, defaultBucket));
+          ws.send("url: " + getLinkS3(defaultFolder, key, defaultBucket));
         } else {
           console.error("Could not find WebSocket connection with UID. They must have disconnected.");
         }
