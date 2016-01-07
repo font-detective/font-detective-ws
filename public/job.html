@@ -164,6 +164,26 @@
 			    .css("opacity", "0");
 			};
 
+			// Hashing function for JS strings
+			// http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
+			String.prototype.hashCode = function() {
+			  	var hash = 0, i, chr, len;
+			  	if (this.length === 0) return hash;
+			  	for (i = 0, len = this.length; i < len; i++) {
+			    	chr   = this.charCodeAt(i);
+			    	hash  = ((hash << 5) - hash) + chr;
+			    	hash |= 0; // Convert to 32bit integer
+			  	}
+			  	return hash;
+			};
+
+			// Get a colour!
+			function colour(key) {
+				var colours = ["red", "green", "Chartreuse", "yellow"];
+				console.log(colours[Math.abs(key.hashCode()) % colours.length]);
+				return colours[Math.abs(key.hashCode()) % colours.length];
+			}
+
 			// Retrieve the results!
 			$.getJSON("/api/job/" + uid, function(data) {
 				var found = (uid && data && !jQuery.isEmptyObject(data) && typeof(data) !== 'undefined');
@@ -178,14 +198,15 @@
 
 				// Add the results to the DOM
 				if (found) {
+					var results = JSON.parse(data.Item.results.S);
+					var selection = JSON.parse(data.Item.selection.S);
+
 					// Display sample image
 					// Do this first so it has *marginally* longer to load
 					$('#results-img').attr('src', data.Item.url.S);
 
 					// Create message string
 					var results_msg = "This image contains ";
-					var results = JSON.parse(data.Item.results.S);
-					var selection = JSON.parse(data.Item.selection.S);
 
 					var contains = [];
 					Object.keys(results).forEach(function (key) {
@@ -193,7 +214,7 @@
 							contains.push(key);
 							console.log(results[key]);
 							results[key].objects.forEach(function(o) {
-								drawBb(selection.x1+o.x, selection.y1+o.y, o.width, o.height, cssify(key), 'green');
+								drawBb(selection.x1 + o.x, selection.y1 + o.y, o.width, o.height, cssify(key), colour(key));
 							});
 						}
 					});
