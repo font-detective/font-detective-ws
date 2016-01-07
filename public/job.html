@@ -54,11 +54,10 @@
 				</div>
 				<div id="content" class="pane item-fixed">
 					<h1 id="content-title">Results for job #</h1>
-					<h2>The results are in!</h2>
+					<h2 id="content-text">The results are in!</h2>
 					<br />
 					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
 					<div id="results">
-						<p id="results-msg"></p>
 						<img id="results-img" alt="" src=""></img>
 					</div>
 				</div>
@@ -146,7 +145,9 @@
 
 			// Retrieve the results!
 			$.getJSON("/api/job/" + uid, function(data) {
-				var found = (uid && data && typeof(data) != 'undefined');
+				var found = (uid && data && !jQuery.isEmptyObject(data) && typeof(data) !== 'undefined');
+				console.log(found);
+				console.log(data);
 
 			  	// Change the title
 			  	var title = "Job not found";
@@ -164,6 +165,10 @@
 
 				// Add the results to the DOM
 				if (found) {
+					// Display sample image
+					// Do this first so it has *marginally* longer to load
+					$('#results-img').attr('src', data.Item.url.S);
+
 					// Create message string
 					var results_msg = "This image contains ";
 					var results = JSON.parse(data.Item.results.S);
@@ -187,10 +192,10 @@
 						results_msg += "no known objects.";
 					}
 
-					$('#results-msg').text(results_msg);
-					$('#results-img').attr('src', data.Item.url.S);
+					// Add it to the page
+					$('#content-text').text(results_msg);
 				} else {
-					$('#results-msg').text('Sorry, no can do pal.');
+					$('#content-text').text('Sorry, no can do pal. The job you\'re looking for can\'t be found.');
 				}
 
 				// Display the results!
