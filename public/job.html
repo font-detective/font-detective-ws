@@ -169,7 +169,10 @@
 					if (contains.length > 0) {
 						for (var i = 0; i < contains.length; i++) {
 							if (i == contains.length-1) {
-								results_msg = results_msg + "and " + contains[i] + ".";
+								if (i > 0) {
+									results_msg += "and ";
+								}
+								results_msg = results_msg  + contains[i] + ".";
 							} else {
 								if (i > 0) {
 									results_msg += ", ";
