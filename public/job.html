@@ -50,7 +50,7 @@
 		<div class="column">
 			<div class="row">
 				<div id="left-arrow-container" class="item icon left" title="Go back?">
-					<a id="left-button" href="bb.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+					<!--<a id="left-button" href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img>--></a>
 				</div>
 				<div id="content" class="pane item-fixed">
 					<h1 id="content-title">Results for job #</h1>
@@ -66,23 +66,17 @@
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Do you want to <a id="misc-link" href="/browse">browse</a> previous matches?
+				Do you want to <a id="misc-link" href="/browse.html">browse</a> previous matches?
 			</div>
 		</div>
 		<script type="text/javascript">
-			// Replace IMG tags with .svg class with in-line SVG
-			replaceSVG();
-
 			// Get client ID
 			var uid = getQueryVariable("uid");
 			if (!uid) {
 				console.error("UID was not specified. Lost at sea.");
 				document.title = "Font Detective > Job not found";
 			}
-
-			// Initialise WebSockets and send UID
-	        initWS();
-
+			
 			// Retrieve image URL
 			var imageUrl = getQueryVariable("img");
 			if (imageUrl) {
@@ -146,8 +140,6 @@
 			// Retrieve the results!
 			$.getJSON("/api/job/" + uid, function(data) {
 				var found = (uid && data && !jQuery.isEmptyObject(data) && typeof(data) !== 'undefined');
-				console.log(found);
-				console.log(data);
 
 			  	// Change the title
 			  	var title = "Job not found";
@@ -156,12 +148,6 @@
 				}
 				document.title = "Font Detective > " + title;
 				$('#content-title').text(title);
-
-				// Stop the spinner
-				spinner.stop();
-				$('#loading').hide();
-
-				console.log(data);
 
 				// Add the results to the DOM
 				if (found) {
@@ -197,6 +183,10 @@
 				} else {
 					$('#content-text').text('Sorry, no can do pal. The job you\'re looking for can\'t be found.');
 				}
+
+				// Stop the spinner
+				spinner.stop();
+				$('#loading').hide();
 
 				// Display the results!
 				$('#results').animate({

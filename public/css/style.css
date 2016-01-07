@@ -3,6 +3,7 @@ body {
 	font-family: arial;
     max-height: 100%;
     max-width: 100%;
+    overflow: hidden;
 }
 
 header {
@@ -17,6 +18,8 @@ header {
 
 .pane {
     width: 50%;
+    max-height: 75%;
+    overflow: scroll;
     background: #fff;
     padding: 22px 32px;
     -moz-border-radius: 8px;
@@ -43,6 +46,20 @@ header {
 	font-size: 1em;
 	color: #b9c1cf;
     z-index: 2;
+}
+
+.pane h2 a,
+.pane h2 a:hover {
+    font-size: 1em;
+    color: #72809a;
+    z-index: 2;
+}
+.pane h2 a {
+    text-decoration: none;
+}
+
+.pane h2 a:hover {
+    text-decoration: underline;
 }
 
 .misc {
@@ -147,6 +164,22 @@ svg:hover path {
 .right {
     float: left;
     text-align: left;
+}
+
+/* https://css-tricks.com/examples/hrs/ */
+hr.browse {
+    height: 1px;
+    border: 0;
+    background: #b9c1cf;
+    background-image: linear-gradient(to right, #b9c1cf, #72809a, #b9c1cf);
+}
+
+img.browse {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #content,

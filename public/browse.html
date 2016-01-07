@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Font Detective > Processing your results</title>
+		<title>Font Detective > Browse</title>
 		<link rel="stylesheet" href="./css/style.css" />
 		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
 
@@ -50,36 +50,27 @@
 		<div class="column">
 			<div class="row">
 				<div id="left-arrow-container" class="item icon left" title="Go back?">
-					<a id="left-button" href="bb.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+					<!--<a id="left-button" href="#"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img>--></a>
 				</div>
 				<div id="content" class="pane item-fixed">
-					<h1>Processing your results</h1>
-					<h2>We are trying to identify the font. We'll update the page when they're in! Your results will be visible at <a id="results-url" href="/job.html">this page</a> when they're ready.</h2>
+					<h1 id="content-title">Browse jobs</h1>
+					<h2 id="content-text">This is a selection of the previous jobs we've attempted. Scroll down for more!</h2>
 					<br />
 					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
+					<div id="results">
+					</div>
 				</div>
 				<div id="right-arrow-container" class="item icon right" title="Continue?">
 					<!-- <a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a> -->
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Want to <a href="index.html" target="_blank">upload</a> a new image while you wait?
+				Would you like to <a id="misc-link" href="/">upload</a> an image?
 			</div>
 		</div>
 		<script type="text/javascript">
-			// Replace IMG tags with .svg class with in-line SVG
-			replaceSVG();
-
-			// Get client ID
-			var uid = getQueryVariable("uid");
-			if (!uid) {
-				console.error("UID was not specified. Lost at sea.");
-			} else {
-				$('#results-url').attr('href', '/job.html?uid=' + uid)
-			}
-
-			// Initialise WebSockets and send UID
-	        initWS();
+			// Get number of jobs to display
+			var n = getQueryVariable("n") || 10;
 
 			// Retrieve image URL
 			var imageUrl = getQueryVariable("img");
@@ -125,10 +116,6 @@
 				$('#extra').animate({
 					opacity: 0
 				}, 500);
-
-				$('#left-arrow-container').animate({
-					opacity: 0
-				}, 500);
 			};
 
 			// Fade into page
@@ -140,32 +127,41 @@
 				$('#extra').animate({
 					opacity: 1
 				}, 500);
-
-				$('#left-arrow-container').animate({
-					opacity: 1
-				}, 500);
 			};
 
 			// Fade in!
 			fadein();
 
-			// Add onClick handlers
-			$("#left-button").attr("href", "#");
-			$("#left-button").on('click', function(){
-				fadeout("bb.html?uid=" + uid);
-			});
+			// Retrieve the results!
+			$.getJSON("/api/jobs/" + n, function(data) {
 
-			// Results are in!
-			function results() {
+				// Add the results to the DOM
+				var keys = Object.keys(data.Items);
+				for (var i = 0; i < keys.length; i++) {
+					var item = data.Items[keys[i]];
+
+					// Make HTML string
+					var html = '<a href=\"job.html?uid=' + item.uid.S + '\"><img class=\"browse\" id=\"' + item.uid.S + '\" src=\"' + item.url.S +'\" /></a>';
+					if (i !== (keys.length-1)) {
+						html += '<hr class=\"browse\"/>';
+					}
+
+					// Display sample image
+					$('#results').append(html);
+
+					// Display classification state
+					// TODO
+				};
+
 				// Stop the spinner
 				spinner.stop();
-
-				// Change the title
-				// TODO
+				$('#loading').hide();
 
 				// Display the results!
-				// TODO
-			}
+				$('#results').animate({
+					opacity: 1
+				}, 500);
+			});
 		</script>
 	</body>
 </html>
