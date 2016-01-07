@@ -44,6 +44,10 @@
 		<!-- spin.js for loading spinner -->
 		<script src="./vendor/spin.js/js/spin.min.js"></script>
 		<!-- !spin.js -->
+
+		<!-- Pure CSS tooltips -->
+		<link href="./vendor/tooltip/css/tt.css" rel="stylesheet" />
+		<!-- !tooltips -->
 	</head>
 	<body>
 		<header></header>
@@ -58,7 +62,7 @@
 					<br />
 					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
 					<div id="results">
-						<img id="results-img" class="center" alt="" src=""></img>
+						<img id="results-img"  alt="" src=""></img>
 					</div>
 				</div>
 				<div id="right-arrow-container" class="item icon right" title="Continue?">
@@ -66,7 +70,7 @@
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Do you want to <a id="misc-link" href="/browse.html">browse</a> previous matches?
+				Do you want to <a id="misc-link" href="/">upload</a> a new image?
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -137,6 +141,29 @@
 			// Fade in!
 			fadein();
 
+			// Function to create a CSS-safe classname
+			// This is specific to the classifier filenames
+			function cssify(input) {
+				return input.replace(/\./, '').replace(/_/, '-');
+			};
+
+			// Function to create a tool tip
+			function ttify(linkText, tipText) {
+				return '<a href=\"#\" class=\"tip\">'+linkText+'<span>'+tipText+'</span></a>';
+			};
+
+			// Draw a bounding box on the image
+			function drawBb(x, y, w, h, cname, colour) {
+			    $('<div class=\"bb '+cname+'\"/>')
+			    .appendTo($('#results'))
+			    .css("left", x + "px")
+			    .css("top", y + "px")
+			    .css("width", w+"px")
+			    .css("height", h+"px")
+			    .css("border", "2px solid " + colour)
+			    .css("opacity", "0");
+			};
+
 			// Retrieve the results!
 			$.getJSON("/api/job/" + uid, function(data) {
 				var found = (uid && data && !jQuery.isEmptyObject(data) && typeof(data) !== 'undefined');
@@ -158,26 +185,32 @@
 					// Create message string
 					var results_msg = "This image contains ";
 					var results = JSON.parse(data.Item.results.S);
+					var selection = JSON.parse(data.Item.selection.S);
 
 					var contains = [];
 					Object.keys(results).forEach(function (key) {
 						if (results[key].found) {
 							contains.push(key);
+							console.log(results[key]);
+							results[key].objects.forEach(function(o) {
+								drawBb(selection.x1+o.x, selection.y1+o.y, o.width, o.height, cssify(key), 'green');
+							});
 						}
 					});
 
 					if (contains.length > 0) {
 						for (var i = 0; i < contains.length; i++) {
+							var spanHtml = "<span id=\"classifier-" + cssify(contains[i]) + "\">" ;
 							if (i == contains.length-1) {
 								if (i > 0) {
 									results_msg += "and ";
 								}
-								results_msg = results_msg  + contains[i] + ".";
+								results_msg = results_msg  + spanHtml + contains[i] + "</span>.";
 							} else {
 								if (i > 0) {
 									results_msg += ", ";
 								}
-								results_msg = results_msg + contains[i] + " ";
+								results_msg = results_msg + spanHtml + contains[i] + "</span> ";
 							}
 						}
 					} else {
@@ -185,7 +218,31 @@
 					}
 
 					// Add it to the page
-					$('#content-text').text(results_msg);
+					$('#content-text').html(results_msg);
+
+					// Now query for the object names and replace!
+					Object.keys(results).forEach(function (key) {
+						if (results[key].found) {
+							console.log(key);
+							$.getJSON("/api/classifier/" + key, function(data) {
+								var id = '#classifier-' + cssify(key);
+								$(id).hover(function() {
+									$('.'+cssify(key)).each(function(bb) {
+										$(this).animate({
+											opacity: 1
+										}, 500);
+									});
+								}, function() {
+									$('.'+cssify(key)).each(function(bb) {
+										$(this).animate({
+											opacity: 0
+										}, 500);
+									});
+								});
+								$(id).html(ttify(data.Item.name.S + '(s)', 'The classifier ' + key + ' identifies ' + data.Item.description.S + '.'));
+							});
+						}
+					});
 				} else {
 					$('#content-text').text('Sorry, no can do pal. The job you\'re looking for can\'t be found.');
 				}

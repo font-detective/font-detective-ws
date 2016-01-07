@@ -50,7 +50,7 @@
 		<div class="column">
 			<div class="row">
 				<div id="left-arrow-container" class="item icon left" title="Go back?">
-					<a id="left-button" href="bb.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+					<a id="left-button" href="/"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
 				</div>
 				<div id="content" class="pane item-fixed">
 					<h1>Processing your results</h1>
@@ -152,7 +152,7 @@
 			// Add onClick handlers
 			$("#left-button").attr("href", "#");
 			$("#left-button").on('click', function(){
-				fadeout("bb.html?uid=" + uid);
+				fadeout("/");
 			});
 
 			// Poll for results!

@@ -189,3 +189,11 @@ img.center {
 #results {
     opacity: 0;
 }
+
+#results {
+    position: relative;
+}
+
+.bb {
+    position: absolute;
+}
