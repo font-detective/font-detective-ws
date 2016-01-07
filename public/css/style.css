@@ -152,6 +152,7 @@ svg:hover path {
 #content,
 #extra,
 #left-arrow-container,
-#right-arrow-container {
+#right-arrow-container,
+#results {
     opacity: 0;
 }

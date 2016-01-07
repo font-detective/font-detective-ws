@@ -44,6 +44,9 @@ if (env === 'production') {
 // JSON API
 app.post('/api/upload/:uid', api.upload);
 
+app.get('/api/job/:uid', api.job);
+app.get('/api/classifier/:filename', api.job);
+
 // Static files in public are routed to "/"
 app.use(express.static(path.join(__dirname, 'public')));
 

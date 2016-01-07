@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Font Detective > Results</title>
+		<link rel="stylesheet" href="./css/style.css" />
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">
+
+		<!-- Favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="./favicon/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="./favicon/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="./favicon/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="./favicon/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="./favicon/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="./favicon/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="./favicon/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192"  href="./favicon/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="./favicon/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+		<link rel="manifest" href="./favicon/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="./favicon/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+		<!-- !Favicon -->
+
+		<!-- URL variables -->
+		<script src="./js/queryVariable.js"></script>
+		<!-- !URL variables -->
+
+		<!-- WebSockets -->
+		<script src="./js/ws.js"></script>
+		<!-- !WebSockets -->
+
+		<!-- jQuery for SVG in-lining et al -->
+		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
+		<!-- !jQuery -->
+
+		<!-- In-line SVG replacement -->
+		<script src="./js/replaceSVG.js"></script>
+		<!-- !SVG -->
+
+		<!-- spin.js for loading spinner -->
+		<script src="./vendor/spin.js/js/spin.min.js"></script>
+		<!-- !spin.js -->
+	</head>
+	<body>
+		<header></header>
+		<div class="column">
+			<div class="row">
+				<div id="left-arrow-container" class="item icon left" title="Go back?">
+					<a id="left-button" href="bb.html"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
+				</div>
+				<div id="content" class="pane item-fixed">
+					<h1 id="content-title">Results for job #</h1>
+					<h2>The results are in!</h2>
+					<br />
+					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
+					<div id="results">
+						<p id="results-msg"></p>
+						<img id="results-img" alt="" src=""></img>
+					</div>
+				</div>
+				<div id="right-arrow-container" class="item icon right" title="Continue?">
+					<!-- <a id="right-button" href="#"><img id="right-arrow" class="svg" src="img/right.svg" alt="Continue?"></img></a> -->
+				</div>
+			</div>
+			<div id="extra" class="misc text-center">
+				Do you want to <a id="misc-link" href="/browse">browse</a> previous matches?
+			</div>
+		</div>
+		<script type="text/javascript">
+			// Replace IMG tags with .svg class with in-line SVG
+			replaceSVG();
+
+			// Get client ID
+			var uid = getQueryVariable("uid");
+			if (!uid) {
+				console.error("UID was not specified. Lost at sea.");
+				document.title = "Font Detective > Job not found";
+			}
+
+			// Initialise WebSockets and send UID
+	        initWS();
+
+			// Retrieve image URL
+			var imageUrl = getQueryVariable("img");
+			if (imageUrl) {
+				$("#sample").attr("src", imageUrl);
+			}
+
+			// Set processing spinner in motion
+			// http://fgnass.github.io/spin.js/
+			var opts = {
+			  lines: 13 // The number of lines to draw
+			, length: 28 // The length of each line
+			, width: 8 // The line thickness
+			, radius: 21 // The radius of the inner circle
+			, scale: 0.5 // Scales overall size of the spinner
+			, corners: 1 // Corner roundness (0..1)
+			, color: '#000' // #rgb or #rrggbb or array of colors
+			, opacity: 0.25 // Opacity of the lines
+			, rotate: 0 // The rotation offset
+			, direction: 1 // 1: clockwise, -1: counterclockwise
+			, speed: 1 // Rounds per second
+			, trail: 60 // Afterglow percentage
+			, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+			, zIndex: 2e9 // The z-index (defaults to 2000000000)
+			, className: 'spinner' // The CSS class to assign to the spinner
+			, top: '70%' // Top position relative to parent
+			, left: '50%' // Left position relative to parent
+			, shadow: false // Whether to render a shadow
+			, hwaccel: true // Whether to use hardware acceleration
+			, position: 'relative' // Element positioning
+			};
+			var target = document.getElementById('loading');
+			var spinner = new Spinner(opts).spin(target);
+
+			// Fade to next page
+			function fadeout (next) {
+				$('#content').animate({
+					opacity: 0
+				}, 500, function(){
+					location = next;
+				});
+
+				$('#extra').animate({
+					opacity: 0
+				}, 500);
+			};
+
+			// Fade into page
+			function fadein () {
+				$('#content').animate({
+					opacity: 1
+				}, 500);
+
+				$('#extra').animate({
+					opacity: 1
+				}, 500);
+			};
+
+			// Fade in!
+			fadein();
+
+			// Retrieve the results!
+			$.getJSON("/api/job/" + uid, function(data) {
+				var found = (uid && data && typeof(data) != 'undefined');
+
+			  	// Change the title
+			  	var title = "Job not found";
+				if (found) {
+					title = "Results for job #" + uid;
+				}
+				document.title = "Font Detective > " + title;
+				$('#content-title').text(title);
+
+				// Stop the spinner
+				spinner.stop();
+				$('#loading').hide();
+
+				console.log(data);
+
+				// Add the results to the DOM
+				if (found) {
+					// Create message string
+					var results_msg = "This image contains ";
+					var results = JSON.parse(data.Item.results.S);
+
+					var contains = [];
+					Object.keys(results).forEach(function (key) {
+						if (results[key].found) {
+							contains.append(key);
+						}
+					});
+
+					if (contains.length > 0) {
+						for (var i = 0; i < contains.length; i++) {
+							if (i == contains.length-1) {
+								results_msg = results_msg + "and " + contains[i] + ".";
+							} else {
+								results_msg = results_msg + ", " + contains[i] + " ";
+							}
+						}
+					} else {
+						results_msg += "no known objects.";
+					}
+
+					$('#results-msg').text(results_msg);
+					$('#results-img').attr('src', data.Item.url.S);
+				} else {
+					$('#results-msg').text('Sorry, no can do pal.');
+				}
+
+				// Display the results!
+				$('#results').animate({
+					opacity: 1
+				}, 500);
+			});
+		</script>
+	</body>
+</html>

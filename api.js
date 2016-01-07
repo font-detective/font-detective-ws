@@ -184,6 +184,61 @@ function getLinkS3(folder, key, bucket) {
   return "https://s3-" + AWS.config.region + ".amazonaws.com/" + bucket.toString() + "/" + fqkey.toString();
 }
 
+
+/**
+ * DyanmoDB
+ */
+
+var dynamodb = new AWS.DynamoDB();
+
+function getJobDynamoDb(uid, callback) {
+  var params = {
+    Key: {
+      uid: {
+        S: uid
+      }
+    },
+    AttributesToGet: [
+      'uid',
+      'url',
+      'selection',
+      'image',
+      'results'
+    ],
+    TableName: 'results'
+  };
+  dynamodb.getItem(params, function(err, data) {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Retrieved results from database');
+    callback(data);
+  });
+};
+
+function getClassifierDynamoDb(filename, callback) {
+  var params = {
+    Key: {
+      filename: {
+        S: filename
+      }
+    },
+    AttributesToGet: [
+      'filename',
+      'description',
+      'name'
+    ],
+    TableName: 'classifiers'
+  };
+  dynamodb.getItem(params, function(err, data) {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Retrieved classifier from database');
+    callback(data);
+  });
+};
+
 /**
  * API
  */
@@ -200,8 +255,12 @@ exports.upload = function (req, res) {
     var path = __dirname + "/files/" + filename;
     fstream = fs.createWriteStream(path);
     file.pipe(fstream);
-    fstream.on('close', function () {
+    fstream.on('error', function(err) {
+      console.error(err.message);
+    });
+    fstream.on('close', function() {
       var key = (0|Math.random()*9e6).toString(36) + filename.replace(/ /g,'');
+      console.log('FileStream has closed. Ising key ' + key);
       putFileS3(path, defaultFolder, key, defaultBucket, { uid: uid }, function(){
         // Send a message back via WS
         var ws = wss.findClient(uid);
@@ -214,5 +273,29 @@ exports.upload = function (req, res) {
         fs.unlink(path);
       });
     });
+  });
+};
+
+// Finds a job in the database
+exports.job = function (req, res) {
+  var uid = req.params.uid;
+
+  getJobDynamoDb(uid, function(data) {
+    console.log('Got job data');
+    console.log(data);
+    res.send(data);
+  });
+};
+
+// TODO - find n jobs
+
+// Finds a job in the database
+exports.classifier = function (req, res) {
+  var fileName = req.params.filename;
+
+  getClassifierDynamoDb(fileName, function(data) {
+    console.log('Got classifier data');
+    console.log(data);
+    res.send(data);
   });
 };
