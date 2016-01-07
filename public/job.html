@@ -58,7 +58,7 @@
 					<br />
 					<span id="loading" style="height: 10%; display: block; margin: 1em;"></span>
 					<div id="results">
-						<img id="results-img" alt="" src=""></img>
+						<img id="results-img" class="center" alt="" src=""></img>
 					</div>
 				</div>
 				<div id="right-arrow-container" class="item icon right" title="Continue?">
@@ -162,7 +162,7 @@
 					var contains = [];
 					Object.keys(results).forEach(function (key) {
 						if (results[key].found) {
-							contains.append(key);
+							contains.push(key);
 						}
 					});
 
@@ -171,7 +171,10 @@
 							if (i == contains.length-1) {
 								results_msg = results_msg + "and " + contains[i] + ".";
 							} else {
-								results_msg = results_msg + ", " + contains[i] + " ";
+								if (i > 0) {
+									results_msg += ", ";
+								}
+								results_msg = results_msg + contains[i] + " ";
 							}
 						}
 					} else {

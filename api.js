@@ -216,6 +216,20 @@ function getJobDynamoDb(uid, callback) {
   });
 };
 
+function getNJobsDynamoDb(n, callback) {
+  var params = {
+    TableName: "results",
+    Limit: n
+  };
+  dynamodb.scan(params, function(err, data) {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Retrieved ' + n + ' results from database');
+    callback(data);
+  });
+}
+
 function getClassifierDynamoDb(filename, callback) {
   var params = {
     Key: {
@@ -280,6 +294,8 @@ exports.upload = function (req, res) {
 exports.job = function (req, res) {
   var uid = req.params.uid;
 
+  console.log('Looking for job ' + uid);
+
   getJobDynamoDb(uid, function(data) {
     console.log('Got job data');
     console.log(data);
@@ -287,7 +303,22 @@ exports.job = function (req, res) {
   });
 };
 
-// TODO - find n jobs
+// Find n-jobs
+// TODO - specify start
+exports.jobs = function (req, res) {
+  var n = req.params.n;
+
+  var max = 10;
+  if (n > 10) {
+    n = max;
+  }
+
+  getNJobsDynamoDb(n, function(data) {
+    console.log('Got job data');
+    console.log(data);
+    res.send(data);
+  });
+}
 
 // Finds a job in the database
 exports.classifier = function (req, res) {

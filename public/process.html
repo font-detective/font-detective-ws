@@ -155,17 +155,24 @@
 				fadeout("bb.html?uid=" + uid);
 			});
 
-			// Results are in!
-			function results() {
-				// Stop the spinner
-				spinner.stop();
+			// Poll for results!
+			function poll() {
+				$.getJSON("/api/job/" + uid, function(data) {
+					var found = (uid && data && !jQuery.isEmptyObject(data) &&
+						typeof(data) !== 'undefined');
+					if (found) {
+						// Stop the spinner
+						spinner.stop();
 
-				// Change the title
-				// TODO
-
-				// Display the results!
-				// TODO
-			}
+						// Redirect the user
+						fadeout("/job.html?uid=" + uid);
+					} else {
+						// Check again in 3 seconds
+						setTimeout(function() { poll(); }, 3000);
+					}
+				});
+			};
+			poll();
 		</script>
 	</body>
 </html>

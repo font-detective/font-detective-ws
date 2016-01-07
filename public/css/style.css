@@ -172,11 +172,11 @@ hr.browse {
     border: 0;
     background: #b9c1cf;
     background-image: linear-gradient(to right, #b9c1cf, #72809a, #b9c1cf);
-}
-
-img.browse {
     margin-top: 1em;
     margin-bottom: 1em;
+}
+
+img.center { 
     display: block;
     margin-left: auto;
     margin-right: auto;
