@@ -1,5 +1,5 @@
 // WebSocket globals
-var wsUri = "ws://localhost:8080";
+var wsUri = "ws://nugenthill.com:8080";
 var websocket = false;
 
 // WebSocket events
