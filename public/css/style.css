@@ -31,6 +31,10 @@ header {
     z-index: 1;
 }
 
+.pane::-webkit-scrollbar { 
+    display: none; 
+}
+
 .pane img {
     display: inline-block;
     max-width: 100%;
