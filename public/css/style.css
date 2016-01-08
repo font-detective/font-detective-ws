@@ -16,9 +16,24 @@ header {
     z-index: -1;
 }
 
+#menu {
+    font-size: 1em;
+    color: #b9c1cf;
+}
+
+#menu a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #fff;
+}
+
+#menu a:hover {
+    text-decoration: underline;
+}
+
 .pane {
     width: 50%;
-    max-height: 75%;
+    max-height: 70%;
     overflow: scroll;
     background: #fff;
     padding: 22px 32px;

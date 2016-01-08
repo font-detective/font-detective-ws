@@ -28,6 +28,7 @@
 		<script src="./vendor/jquery.imgareaselect-0.9.10/js/jquery.min.js"></script>
 	</head>
 	<body>
+		<div id="menu"><a href="#" id="menu-upload">Upload</a> | <a href="#" id="menu-browse">Browse</a></div>
 		<header></header>
 		<div class="column">
 			<div class="row">
@@ -60,6 +61,14 @@
 
 			$('#misc-link').click(function() {
 				fadeout("/", true);
+			});
+
+			$('#menu-upload').click(function() {
+				fadeout("/", true);
+			});
+
+			$('#menu-browse').click(function() {
+				fadeout("browse.html", true);
 			});
 
 			// Fade into page
