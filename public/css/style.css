@@ -194,10 +194,19 @@ img.center {
     opacity: 0;
 }
 
+.browse-img-wrapper,
 #results {
     position: relative;
 }
 
+.classification-overlay,
 .bb {
     position: absolute;
+}
+
+.classification-overlay {
+    top: 0;
+    left: 0;
+    width: 10%;
+    opacity: 0.5;
 }

@@ -140,17 +140,33 @@
 				for (var i = 0; i < keys.length; i++) {
 					var item = data.Items[keys[i]];
 
-					// Make HTML string
-					var html = '<a href=\"job.html?uid=' + item.uid.S + '\"><img class=\"center\" id=\"' + item.uid.S + '\" src=\"' + item.url.S +'\" /></a>';
+					// Make basic HTML string
+					var html = '<div class=\"browse-img-wrapper\"><a href=\"job.html?uid=' + item.uid.S + '\"><img class=\"center\" id=\"' + item.uid.S + '\" src=\"' + item.url.S +'\" /></a>';
+
+					// Get classification state
+					var found = false;
+					var results = JSON.parse(item.results.S);
+					var classifiers = Object.keys(results);
+					for (var j = 0; j < classifiers.length; j++) {
+						var classifier = results[classifiers[j]];
+						found = found || (classifier.found);
+					}
+
+					console.log(found);
+
+					// Add overlay
+					html += '<img class=\"center classification-overlay\" src=\"./img/' + ((found) ? 'tick' : 'cross') + '.png\"><img>';
+
+					// Add closing DIV tag
+					html += '</div>';
+
+					// Add separator
 					if (i !== (keys.length-1)) {
 						html += '<hr class=\"browse\"/>';
 					}
 
 					// Display sample image
 					$('#results').append(html);
-
-					// Display classification state
-					// TODO
 				};
 
 				// Stop the spinner
