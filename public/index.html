@@ -50,8 +50,9 @@
 					<a id="left-button" class="disabled"><img id="left-arrow" class="svg" src="img/left.svg" alt="Go back?"></img></a>
 				</div>
 				<div id="content" class="pane item-fixed" id="page1">
-					<h1>Do you want to identify a font?</h1>
+					<h1>Do you want to identify a font<span class="footnote">*</span>?</h1>
 					<h2>Upload an image showing us what you'd like to find.</h2>
+					<p class="footnote">* we've got a confession to make. This website doesn't actually identify fonts... that was quite a labour (and time) intensive thing to create. Instead, it will run Haar-like classifiers to search for things like faces and bananas - maybe you'd like to identify one of those?</p>
 					<br />
 					<noscript>
 						<p>We're sorry to tell you that you must <a href="http://www.enable-javascript.com/" target="_blank">enable JavaScript</a> to continue.</p>
@@ -66,7 +67,7 @@
 				</div>
 			</div>
 			<div id="extra" class="misc text-center">
-				Or you can <a id="misc-link" href="/browse.html">browse</a> previous matches.
+				Or you can give the <a id="misc-link" href="bb.html?img=https://s3-eu-west-1.amazonaws.com/font-detective-image-bucket/img/2x5s0Lenna.png">example image</a> a go.
 			</div>
 		</div>
 		<script>
@@ -76,6 +77,9 @@
 			// Generate a random string for an ID
 			// http://stackoverflow.com/questions/1349404/generate-a-string-of-5-random-characters-in-javascript
 	        var uid = (0|Math.random()*9e6).toString(36);
+
+	        // Add this to the example image link
+	        $('#misc-link').attr('href', 'bb.html?img=https://s3-eu-west-1.amazonaws.com/font-detective-image-bucket/img/2x5s0Lenna.png&uid=' + uid);
 
 	        // Set field in upload form
 		    $('#fileUpload').attr("action", "http://nugenthill.com/api/upload/" + uid);
